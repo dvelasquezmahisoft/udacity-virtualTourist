@@ -1,5 +1,5 @@
 //
-//  ShowPhotoCollectionViewController.swift
+//  ShowPhotophotoCollectionController.swift
 //  VirtualTourist
 //
 //  Created by Daniela Velasquez on 2/13/16.
@@ -10,14 +10,15 @@ import UIKit
 import MapKit
 
 
-class ShowPhotoCollectionViewController: UIViewController {
-
+class ShowPhotophotoCollectionController: UIViewController {
+    
     @IBOutlet weak var mapDetail: MKMapView!
     @IBOutlet weak var photoCollection: UICollectionView!
     @IBOutlet weak var newCollectionBtn: UIButton!
     
     //MARK: Logic Vars
     var pinLocation:PinLocation?
+    var photos:[String]?
     let regionRadius: CLLocationDistance = 300
     
     
@@ -38,13 +39,39 @@ class ShowPhotoCollectionViewController: UIViewController {
         
         //showRequestMode(show: false)
         
+        photoCollection?.reloadData()
+        
     }
     
     
     
+    // MARK: Collection View Data Source
+    func collectionView(photoCollection: UICollectionView, numberOfItemsInSection section: Int) -> Int {
+        return photos!.count
+    }
+    
+    func collectionView(photoCollection: UICollectionView, cellForItemAtIndexPath indexPath: NSIndexPath) -> UICollectionViewCell {
+        
+        let cell = photoCollection.dequeueReusableCellWithReuseIdentifier(PhotoCollectionCell.identifier, forIndexPath: indexPath) as! PhotoCollectionCell
+        
+        //Set cell with meme values
+        cell.setup()
+        
+        return cell
+    }
+    
+    func collectionView(collectionView: UICollectionView, didSelectItemAtIndexPath indexPath: NSIndexPath){
+        
+        
+    }
+    
+    
+    
+    //MARK: IBActions
+    
     @IBAction func addNewCollection(sender: AnyObject) {
-    
-    
+        //TODO: Add new photo from location
+        
     }
     
     
@@ -57,4 +84,32 @@ class ShowPhotoCollectionViewController: UIViewController {
         mapDetail.addAnnotation(annotation)
     }
     
+}
+
+
+
+extension ShowPhotophotoCollectionController: MKMapViewDelegate {
+    
+    func mapView(mapView: MKMapView, viewForAnnotation annotation: MKAnnotation) -> MKAnnotationView? {
+        if let annotation = annotation as? PinAnnotation {
+            
+            let identifier = "pin"
+            var view: MKPinAnnotationView
+            
+            if let dequeuedView = mapView.dequeueReusableAnnotationViewWithIdentifier(identifier)
+                as? MKPinAnnotationView {
+                    dequeuedView.annotation = annotation
+                    view = dequeuedView
+            }else {
+                view = MKPinAnnotationView(annotation: annotation, reuseIdentifier: identifier)
+                view.canShowCallout = false
+                view.calloutOffset = CGPoint(x: -5, y: 5)
+                view.rightCalloutAccessoryView = nil
+            }
+            
+            return view
+        }
+        
+        return nil
+    }
 }

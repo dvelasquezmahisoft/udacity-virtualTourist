@@ -20,6 +20,8 @@
 		93FC497C1C6FBF6E00B41CA5 /* PinLocation.swift in Sources */ = {isa = PBXBuildFile; fileRef = 93FC497B1C6FBF6E00B41CA5 /* PinLocation.swift */; };
 		93FC497E1C6FBFC800B41CA5 /* BaseViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 93FC497D1C6FBFC800B41CA5 /* BaseViewController.swift */; };
 		93FC49801C6FC00300B41CA5 /* ConnectionsValidator.swift in Sources */ = {isa = PBXBuildFile; fileRef = 93FC497F1C6FC00300B41CA5 /* ConnectionsValidator.swift */; };
+		93FC49831C6FC27500B41CA5 /* PhotoCollectionCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 93FC49821C6FC27500B41CA5 /* PhotoCollectionCell.swift */; };
+		93FC49851C6FC2D300B41CA5 /* StringExtension.swift in Sources */ = {isa = PBXBuildFile; fileRef = 93FC49841C6FC2D300B41CA5 /* StringExtension.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -38,6 +40,8 @@
 		93FC497B1C6FBF6E00B41CA5 /* PinLocation.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = PinLocation.swift; path = Annotations/PinLocation.swift; sourceTree = "<group>"; };
 		93FC497D1C6FBFC800B41CA5 /* BaseViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = BaseViewController.swift; sourceTree = "<group>"; };
 		93FC497F1C6FC00300B41CA5 /* ConnectionsValidator.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ConnectionsValidator.swift; sourceTree = "<group>"; };
+		93FC49821C6FC27500B41CA5 /* PhotoCollectionCell.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = PhotoCollectionCell.swift; sourceTree = "<group>"; };
+		93FC49841C6FC2D300B41CA5 /* StringExtension.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = StringExtension.swift; path = Miscelaneus/StringExtension.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -108,6 +112,8 @@
 				93FC49791C6FBCEF00B41CA5 /* Utils.swift */,
 				93FC49771C6FBC8100B41CA5 /* Messages.swift */,
 				93FC497F1C6FC00300B41CA5 /* ConnectionsValidator.swift */,
+				93FC49821C6FC27500B41CA5 /* PhotoCollectionCell.swift */,
+				93FC49841C6FC2D300B41CA5 /* StringExtension.swift */,
 			);
 			name = Support;
 			sourceTree = "<group>";
@@ -191,8 +197,10 @@
 				93FC497C1C6FBF6E00B41CA5 /* PinLocation.swift in Sources */,
 				93FC497E1C6FBFC800B41CA5 /* BaseViewController.swift in Sources */,
 				93FC49761C6FBBB400B41CA5 /* PinAnnotation.swift in Sources */,
+				93FC49851C6FC2D300B41CA5 /* StringExtension.swift in Sources */,
 				93FC49731C6FB9CE00B41CA5 /* MapViewController.swift in Sources */,
 				93FC49631C6FB93F00B41CA5 /* VirtualTourist.xcdatamodeld in Sources */,
+				93FC49831C6FC27500B41CA5 /* PhotoCollectionCell.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
