@@ -8,6 +8,13 @@
 
 import UIKit
 import MapKit
+import CoreData
+
+
+//TODO: Adding loader when the pin is adding
+//TODO: Segue to photos
+//TODO: Remember the last map location (save in persistence)
+//TODO: Request Pin title (currently set Nuevo!!!)
 
 class MapViewController: UIViewController {
     
@@ -17,15 +24,13 @@ class MapViewController: UIViewController {
     var updating:Bool?
     let regionRadius: CLLocationDistance = 1000
     
-    
-    
     //MARK: Life Cycle Methods
     override func viewDidLoad() {
         
         super.viewDidLoad()
         
-        
         loadPreviousLocation()
+        
         //Init locationManager
         locationManager = CLLocationManager()
         locationManager.delegate = self
@@ -33,7 +38,9 @@ class MapViewController: UIViewController {
         locationManager.requestAlwaysAuthorization()
         locationManager.startUpdatingLocation()
         
+        mapView.addGestureRecognizer(UITapGestureRecognizer(target: self, action: "addAnnotation:"))
         
+        loadPins()
     }
     
     override func viewWillAppear(animated: Bool) {
@@ -42,9 +49,24 @@ class MapViewController: UIViewController {
     
     
     //MARK: IBAction Methods
-  
+    
+    
+    
     
     //MARK: Other Methods
+    
+    func centerMapOnLocation(location: CLLocation) {
+        let coordinateRegion = MKCoordinateRegionMakeWithDistance(location.coordinate,
+            regionRadius * 2.0, regionRadius * 2.0)
+        mapView.setRegion(coordinateRegion, animated: true)
+    }
+    
+    
+    func loadPreviousLocation(){
+        //TODO:
+    }
+    
+    
     
     override func prepareForSegue(segue: UIStoryboardSegue, sender: AnyObject?) {
         
@@ -53,42 +75,79 @@ class MapViewController: UIViewController {
         }
     }
     
-    func loadPreviousLocation(){
-    
-        //TODO:
-    }
-    
-    
-    func centerMapOnLocation(location: CLLocation) {
-        let coordinateRegion = MKCoordinateRegionMakeWithDistance(location.coordinate,
-            regionRadius * 2.0, regionRadius * 2.0)
-        mapView.setRegion(coordinateRegion, animated: true)
-    }
-    
     func addNewPin(pin: PinAnnotation){
-        //TODO: Save pin info in coredata
-        performSegueWithIdentifier("showPhotoCollection", sender: self)
+        
+        if(PersistenceManager.instance.savePin(pin.title!, lat: pin.coordinate.latitude, lon: pin.coordinate.longitude) == true){
+            loadPins()
+            showAlert("Pin \(pin.title!) add successfully ", viewController: self)
+        }else{
+            showAlert("Could not save pin \(pin.title!)", viewController: self)
+        }
+        
+        //performSegueWithIdentifier("showPhotoCollection", sender: self)
     }
     
-    func getLocationPins() -> [PinAnnotation]{
     
-            return [PinAnnotation]()
+    /**
+     * Tap Gesture Recognizer action.
+     * Adding a pinAnnotation in the map and save info in persistence.
+     * @param: gestureRecognizer (TapGestureRecognizer)
+     */
+    func addAnnotation(gestureRecognizer:UIGestureRecognizer){
+    
+        let touchPoint = gestureRecognizer.locationInView(mapView)
+        let newCoordinates = mapView.convertPoint(touchPoint, toCoordinateFromView: mapView)
+        
+        let annotation = PinAnnotation(title: "Nuevo!!!", coordinate: newCoordinates)
+        
+        
+        //TODO: Show loader
+        CLGeocoder().reverseGeocodeLocation(CLLocation(latitude: newCoordinates.latitude,
+            longitude: newCoordinates.longitude),
+            completionHandler: {(placemarks, error) -> Void in
+                
+                //TODO: Hide loader
+                if error != nil {
+                    showAlert("Reverse geocoder failed with error" + error!.localizedDescription, viewController: self)
+                    return
+                }
+                
+                self.mapView.addAnnotation(annotation)
+                
+                self.addNewPin(annotation)
+                
+        })
+        
     }
     
+    /**
+     * Load persistence pins.
+     */
     func loadPins(){
-    
-        for sLocation in getLocationPins(){
+        
+        let pins = PersistenceManager.instance.getLocationPins()
+        
+        guard pins.count > 0 else{
+            showAlert(Messages.mNoPins, viewController: self)
+            return
+        }
+        
+        for sLocation in pins{
             
-            //Show students on map
-            let annotation = PinAnnotation(title: "", url: "", coordinate:  CLLocationCoordinate2D(latitude: 0.0,//sLocation.latitude!,
-                 longitude: 0.0))//sLocation.longitude!))
+            let lat = sLocation.valueForKey("lat") as! NSNumber
+            let lon = sLocation.valueForKey("lon") as! NSNumber
             
+            let annotation = PinAnnotation(title: sLocation.valueForKey("name") as! String,
+                coordinate:  CLLocationCoordinate2D(latitude: lat.doubleValue, longitude: lon.doubleValue))
+            
+            //Add pin annotation in the map
             mapView.addAnnotation(annotation)
         }
     }
-
+    
+    
+    
 }
-
 
 
 extension MapViewController: MKMapViewDelegate {

@@ -18,7 +18,9 @@ struct Messages {
     static let titleNetworkProblems = "Network Problems"
     
     //static let mUserWithLocation = "User \" \((UserSession.instance.user?.firstName)!) \((UserSession.instance.user?.lastName)!) \" has already posted a student location. Would you like to overwrite their location?"
+    
     static let mNoInternetConnection =  "No internet access"
+    static let mNoPins = "Sorry you don't have pins"
     
     static let bOk = "OK"
     static let bDismiss = "Dismiss"
