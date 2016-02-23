@@ -14,7 +14,12 @@ import CoreData
 //TODO: Adding loader when the pin is adding
 //TODO: Segue to photos
 //TODO: Remember the last map location (save in persistence)
+
+/*
+The center of the map and the zoom level should be persistent. If the app is turned off, the map should return to the same state when it is turned on again.
+*/
 //TODO: Request Pin title (currently set Nuevo!!!)
+
 
 class MapViewController: UIViewController {
     
@@ -41,6 +46,8 @@ class MapViewController: UIViewController {
         mapView.addGestureRecognizer(UITapGestureRecognizer(target: self, action: "addAnnotation:"))
         
         loadPins()
+        
+        centerMapOnLocation()
     }
     
     override func viewWillAppear(animated: Bool) {
@@ -55,18 +62,24 @@ class MapViewController: UIViewController {
     
     //MARK: Other Methods
     
-    func centerMapOnLocation(location: CLLocation) {
-        let coordinateRegion = MKCoordinateRegionMakeWithDistance(location.coordinate,
-            regionRadius * 2.0, regionRadius * 2.0)
-        mapView.setRegion(coordinateRegion, animated: true)
+    func centerMapOnLocation() {
+        
+        let span = PersistenceManager.instance.getCurrentZoom()
+        let coord = PersistenceManager.instance.getCurrentLocation()
+        
+       let savedRegion = MKCoordinateRegion(center: coord, span: span)
+        
+        print(savedRegion)
+        
+        let region = MKCoordinateRegionMake(coord, MKCoordinateSpanMake(span.latitudeDelta/3.2880363685, span.longitudeDelta/3.2187500494))
+               
+        mapView.setRegion(region, animated: true)
     }
     
     
     func loadPreviousLocation(){
         //TODO:
     }
-    
-    
     
     override func prepareForSegue(segue: UIStoryboardSegue, sender: AnyObject?) {
         
@@ -180,13 +193,24 @@ extension MapViewController: MKMapViewDelegate {
         addNewPin(pin)
         
     }
+    
+    func mapView(mapView: MKMapView, regionDidChangeAnimated animated: Bool) {
+        
+       PersistenceManager.instance.saveCurrentLocation(mapView.centerCoordinate.latitude, lon: mapView.centerCoordinate.longitude)
+        
+       PersistenceManager.instance.saveCurrentZoom(mapView.region.span)
+        
+        print(mapView.region.span)
+        print(mapView.region.center)
+        
+    }
 }
 
 extension MapViewController: CLLocationManagerDelegate{
     
     func locationManager(manager: CLLocationManager, didUpdateLocations locations: [CLLocation]) {
-        let userLocation:CLLocation = locations[0]
-        centerMapOnLocation(userLocation)
+        //let userLocation:CLLocation = locations[0]
+       // centerMapOnLocation(userLocation)
     }
     
 }

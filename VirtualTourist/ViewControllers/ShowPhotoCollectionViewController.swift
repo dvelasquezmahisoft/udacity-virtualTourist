@@ -79,7 +79,7 @@ class ShowPhotophotoCollectionController: UIViewController {
     func loadPinLocation(){
         
         //Show pin in the map
-        let annotation = PinAnnotation(title: (pinLocation?.firstName)!, url: "", coordinate:  CLLocationCoordinate2D(latitude:  pinLocation!.latitude, longitude:  pinLocation!.longitude))
+        let annotation = PinAnnotation(title: (pinLocation?.firstName)!, coordinate:  CLLocationCoordinate2D(latitude:  pinLocation!.latitude, longitude:  pinLocation!.longitude))
         
         mapDetail.addAnnotation(annotation)
     }

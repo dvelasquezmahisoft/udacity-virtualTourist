@@ -8,6 +8,7 @@
 
 import UIKit
 import CoreData
+import MapKit
 
 
 //TODO: Photo adding function
@@ -37,6 +38,36 @@ class PersistenceManager: NSObject {
         
     }
     
+ 
+    func saveCurrentZoom(zoom:MKCoordinateSpan){
+        NSUserDefaults.standardUserDefaults().setDouble(zoom.latitudeDelta, forKey: "userZoomLat")
+        NSUserDefaults.standardUserDefaults().setDouble(zoom.longitudeDelta, forKey: "userZoomLon")
+    }
+    
+    func getCurrentZoom()-> MKCoordinateSpan{
+
+        let lat = NSUserDefaults.standardUserDefaults().doubleForKey("userZoomLat")
+        let lon = NSUserDefaults.standardUserDefaults().doubleForKey("userZoomLon")
+        
+        let coord = MKCoordinateSpanMake(lat, lon)
+        
+        return coord
+    }
+    
+    func saveCurrentLocation(lat:Double, lon:Double){
+        NSUserDefaults.standardUserDefaults().setDouble(lat, forKey: "userLat")
+        NSUserDefaults.standardUserDefaults().setDouble(lon, forKey: "userLon")
+    }
+    
+    func getCurrentLocation()-> CLLocationCoordinate2D{
+        
+        let lat = NSUserDefaults.standardUserDefaults().doubleForKey("userLat")
+        let lon = NSUserDefaults.standardUserDefaults().doubleForKey("userLon")
+        
+        let coord = CLLocationCoordinate2D(latitude: lat, longitude: lon)
+        
+        return coord
+    }
     
     func getLocationPins() -> [Pin]{
         
