@@ -10,7 +10,7 @@ import UIKit
 import MapKit
 
 
-class ShowPhotophotoCollectionController: UIViewController {
+class ShowPhotoCollectionController: UIViewController {
     
     @IBOutlet weak var mapDetail: MKMapView!
     @IBOutlet weak var photoCollection: UICollectionView!
@@ -79,16 +79,31 @@ class ShowPhotophotoCollectionController: UIViewController {
     func loadPinLocation(){
         
         //Show pin in the map
-        let annotation = PinAnnotation(title: (pinLocation?.firstName)!, coordinate:  CLLocationCoordinate2D(latitude:  pinLocation!.latitude, longitude:  pinLocation!.longitude))
+        let annotation = PinAnnotation(title: "", coordinate:  CLLocationCoordinate2D(latitude:  pinLocation!.latitude, longitude:  pinLocation!.longitude))
         
         mapDetail.addAnnotation(annotation)
+        
+        //Set initial location
+        let initialLocation = CLLocation(latitude: pinLocation!.latitude, longitude: pinLocation!.longitude)
+        
+        let coordinateRegion = MKCoordinateRegionMakeWithDistance(initialLocation.coordinate,
+            regionRadius * 2.0, regionRadius * 2.0)
+        
+        mapDetail.setRegion(coordinateRegion, animated: true)
+        
     }
     
+    
+
+    @IBAction func goBack(sender: AnyObject) {
+        
+        self.dismissViewControllerAnimated(true, completion: nil)
+    }
 }
 
 
 
-extension ShowPhotophotoCollectionController: MKMapViewDelegate {
+extension ShowPhotoCollectionController: MKMapViewDelegate {
     
     func mapView(mapView: MKMapView, viewForAnnotation annotation: MKAnnotation) -> MKAnnotationView? {
         if let annotation = annotation as? PinAnnotation {

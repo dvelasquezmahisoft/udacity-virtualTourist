@@ -12,13 +12,7 @@ import CoreData
 
 
 //TODO: Adding loader when the pin is adding
-//TODO: Segue to photos
-//TODO: Remember the last map location (save in persistence)
 
-/*
-The center of the map and the zoom level should be persistent. If the app is turned off, the map should return to the same state when it is turned on again.
-*/
-//TODO: Request Pin title (currently set Nuevo!!!)
 
 
 class MapViewController: UIViewController {
@@ -27,6 +21,7 @@ class MapViewController: UIViewController {
     
     var locationManager:CLLocationManager!
     var updating:Bool?
+    var newPin:PinAnnotation?
     let regionRadius: CLLocationDistance = 1000
     
     //MARK: Life Cycle Methods
@@ -43,8 +38,10 @@ class MapViewController: UIViewController {
         locationManager.requestAlwaysAuthorization()
         locationManager.startUpdatingLocation()
         
-        mapView.addGestureRecognizer(UITapGestureRecognizer(target: self, action: "addAnnotation:"))
+        mapView.addGestureRecognizer(UILongPressGestureRecognizer(target: self, action: "addAnnotation:"))
         
+        
+        //UITapGestureRecognizer UI
         loadPins()
         
         centerMapOnLocation()
@@ -72,7 +69,7 @@ class MapViewController: UIViewController {
         print(savedRegion)
         
         let region = MKCoordinateRegionMake(coord, MKCoordinateSpanMake(span.latitudeDelta/3.2880363685, span.longitudeDelta/3.2187500494))
-               
+        
         mapView.setRegion(region, animated: true)
     }
     
@@ -84,7 +81,11 @@ class MapViewController: UIViewController {
     override func prepareForSegue(segue: UIStoryboardSegue, sender: AnyObject?) {
         
         if(segue.identifier == "showPhotoCollection"){
-            //(segue.destinationViewController as! ShowPhotoCollectionViewController).updating = updating
+         
+            let destination = (segue.destinationViewController as! ShowPhotoCollectionController)
+            
+            destination.pinLocation = PinLocation(latitude: newPin!.coordinate.latitude, longitude: newPin!.coordinate.longitude)
+            
         }
     }
     
@@ -92,12 +93,15 @@ class MapViewController: UIViewController {
         
         if(PersistenceManager.instance.savePin(pin.title!, lat: pin.coordinate.latitude, lon: pin.coordinate.longitude) == true){
             loadPins()
-            showAlert("Pin \(pin.title!) add successfully ", viewController: self)
+            //showAlert("Pin \(pin.title!) add successfully ", viewController: self)
+            
+            newPin = pin
+            
+            performSegueWithIdentifier("showPhotoCollection", sender: self)
         }else{
             showAlert("Could not save pin \(pin.title!)", viewController: self)
         }
-        
-        //performSegueWithIdentifier("showPhotoCollection", sender: self)
+     
     }
     
     
@@ -111,26 +115,27 @@ class MapViewController: UIViewController {
         let touchPoint = gestureRecognizer.locationInView(mapView)
         let newCoordinates = mapView.convertPoint(touchPoint, toCoordinateFromView: mapView)
         
-        let annotation = PinAnnotation(title: "Nuevo!!!", coordinate: newCoordinates)
+        let annotation = PinAnnotation(title: "", coordinate: newCoordinates)
         
-        
-        //TODO: Show loader
-        CLGeocoder().reverseGeocodeLocation(CLLocation(latitude: newCoordinates.latitude,
-            longitude: newCoordinates.longitude),
-            completionHandler: {(placemarks, error) -> Void in
-                
-                //TODO: Hide loader
-                if error != nil {
-                    showAlert("Reverse geocoder failed with error" + error!.localizedDescription, viewController: self)
-                    return
-                }
-                
-                self.mapView.addAnnotation(annotation)
-                
-                self.addNewPin(annotation)
-                
-        })
-        
+        if gestureRecognizer.state == .Ended{
+            
+            //TODO: Show loader
+            CLGeocoder().reverseGeocodeLocation(CLLocation(latitude: newCoordinates.latitude,
+                longitude: newCoordinates.longitude),
+                completionHandler: {(placemarks, error) -> Void in
+                    
+                    //TODO: Hide loader
+                    if error != nil {
+                        showAlert("Reverse geocoder failed with error" + error!.localizedDescription, viewController: self)
+                        return
+                    }
+                    
+                    self.mapView.addAnnotation(annotation)
+                    
+                    self.addNewPin(annotation)
+                    
+            })
+        }
     }
     
     /**
@@ -176,9 +181,9 @@ extension MapViewController: MKMapViewDelegate {
                     view = dequeuedView
             } else {
                 view = MKPinAnnotationView(annotation: annotation, reuseIdentifier: identifier)
-                view.canShowCallout = true
-                view.calloutOffset = CGPoint(x: -5, y: 5)
-                view.rightCalloutAccessoryView = UIButton(type: .DetailDisclosure)
+                //view.canShowCallout = true
+                //view.calloutOffset = CGPoint(x: -5, y: 5)
+               // view.rightCalloutAccessoryView = UIButton(type: .DetailDisclosure)
             }
             return view
         }
@@ -186,11 +191,14 @@ extension MapViewController: MKMapViewDelegate {
         return nil
     }
     
-    func mapView(mapView: MKMapView, annotationView view: MKAnnotationView, calloutAccessoryControlTapped control: UIControl){
+    func mapView(mapView: MKMapView, didSelectAnnotationView view: MKAnnotationView){
         
         let pin = view.annotation as! PinAnnotation
         
-        addNewPin(pin)
+        newPin = pin
+        
+        performSegueWithIdentifier("showPhotoCollection", sender: self)
+        
         
     }
     

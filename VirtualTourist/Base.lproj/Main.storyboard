@@ -63,15 +63,16 @@
             </objects>
             <point key="canvasLocation" x="-76.5" y="353"/>
         </scene>
-        <!--Show Photo Collection View Controller-->
+        <!--Show Photo Collection Controller-->
         <scene sceneID="mrV-ms-fXr">
             <objects>
-                <viewController id="9wS-cB-6KU" customClass="ShowPhotoCollectionViewController" customModule="VirtualTourist" customModuleProvider="target" sceneMemberID="viewController">
+                <viewController id="9wS-cB-6KU" customClass="ShowPhotoCollectionController" customModule="VirtualTourist" customModuleProvider="target" sceneMemberID="viewController">
                     <layoutGuides>
                         <viewControllerLayoutGuide type="top" id="NuO-nv-55S"/>
                         <viewControllerLayoutGuide type="bottom" id="93P-yn-Pj1"/>
                     </layoutGuides>
                     <view key="view" contentMode="scaleToFill" id="fYU-mR-4Jo">
+                        <rect key="frame" x="0.0" y="0.0" width="600" height="600"/>
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                         <subviews>
                             <collectionView clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="scaleToFill" dataMode="prototypes" translatesAutoresizingMaskIntoConstraints="NO" id="h65-x0-6LE">
@@ -94,15 +95,9 @@
                                     </collectionViewCell>
                                 </cells>
                                 <variation key="widthClass=compact" fixedFrame="YES">
-                                    <rect key="frame" x="0.0" y="235" width="400" height="309"/>
+                                    <rect key="frame" x="0.0" y="233" width="400" height="312"/>
                                 </variation>
                             </collectionView>
-                            <mapView clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="scaleToFill" mapType="standard" translatesAutoresizingMaskIntoConstraints="NO" id="NF8-KO-t9m">
-                                <rect key="frame" x="0.0" y="0.0" width="240" height="128"/>
-                                <variation key="widthClass=compact" fixedFrame="YES">
-                                    <rect key="frame" x="0.0" y="45" width="400" height="190"/>
-                                </variation>
-                            </mapView>
                             <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="1C3-3f-98i">
                                 <rect key="frame" x="-23" y="-15" width="46" height="30"/>
                                 <state key="normal" title="New Collection"/>
@@ -113,23 +108,81 @@
                                     <action selector="addNewCollection:" destination="9wS-cB-6KU" eventType="touchUpInside" id="psI-VW-vLv"/>
                                 </connections>
                             </button>
+                            <navigationBar contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="qOk-C5-2fj">
+                                <rect key="frame" x="0.0" y="0.0" width="320" height="44"/>
+                                <color key="barTintColor" red="0.17254901959999999" green="0.29411764709999999" blue="0.65098039220000004" alpha="1" colorSpace="calibratedRGB"/>
+                                <items>
+                                    <navigationItem id="rTy-Er-gUo">
+                                        <barButtonItem key="leftBarButtonItem" title="&lt; OK" id="BbJ-Kn-hTQ">
+                                            <connections>
+                                                <action selector="goBack:" destination="9wS-cB-6KU" id="THq-j1-puc"/>
+                                            </connections>
+                                        </barButtonItem>
+                                    </navigationItem>
+                                </items>
+                            </navigationBar>
+                            <mapView clipsSubviews="YES" multipleTouchEnabled="YES" userInteractionEnabled="NO" contentMode="scaleToFill" mapType="standard" zoomEnabled="NO" scrollEnabled="NO" rotateEnabled="NO" pitchEnabled="NO" translatesAutoresizingMaskIntoConstraints="NO" id="NF8-KO-t9m">
+                                <rect key="frame" x="0.0" y="0.0" width="240" height="128"/>
+                                <constraints>
+                                    <constraint firstAttribute="height" constant="190" id="mRa-Ji-Rm5"/>
+                                </constraints>
+                                <variation key="default">
+                                    <mask key="constraints">
+                                        <exclude reference="mRa-Ji-Rm5"/>
+                                    </mask>
+                                </variation>
+                                <variation key="widthClass=compact">
+                                    <mask key="constraints">
+                                        <include reference="mRa-Ji-Rm5"/>
+                                    </mask>
+                                </variation>
+                            </mapView>
                         </subviews>
                         <color key="backgroundColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
+                        <constraints>
+                            <constraint firstItem="NF8-KO-t9m" firstAttribute="leading" secondItem="fYU-mR-4Jo" secondAttribute="leading" id="Psl-A9-lXO"/>
+                            <constraint firstItem="qOk-C5-2fj" firstAttribute="leading" secondItem="fYU-mR-4Jo" secondAttribute="leading" id="UZV-73-MOR"/>
+                            <constraint firstItem="qOk-C5-2fj" firstAttribute="top" secondItem="fYU-mR-4Jo" secondAttribute="top" id="hjJ-A1-vCH">
+                                <variation key="widthClass=compact" constant="20"/>
+                            </constraint>
+                            <constraint firstAttribute="trailing" secondItem="NF8-KO-t9m" secondAttribute="trailing" id="jXJ-Z7-2Kb"/>
+                            <constraint firstItem="NF8-KO-t9m" firstAttribute="top" secondItem="qOk-C5-2fj" secondAttribute="bottom" id="oPL-ER-7Qp"/>
+                            <constraint firstAttribute="trailing" secondItem="qOk-C5-2fj" secondAttribute="trailing" id="tx2-hN-4qP"/>
+                        </constraints>
                         <variation key="default">
                             <mask key="subviews">
                                 <exclude reference="h65-x0-6LE"/>
-                                <exclude reference="NF8-KO-t9m"/>
                                 <exclude reference="1C3-3f-98i"/>
+                                <exclude reference="qOk-C5-2fj"/>
+                                <exclude reference="NF8-KO-t9m"/>
+                            </mask>
+                            <mask key="constraints">
+                                <exclude reference="UZV-73-MOR"/>
+                                <exclude reference="hjJ-A1-vCH"/>
+                                <exclude reference="tx2-hN-4qP"/>
+                                <exclude reference="Psl-A9-lXO"/>
+                                <exclude reference="jXJ-Z7-2Kb"/>
+                                <exclude reference="oPL-ER-7Qp"/>
                             </mask>
                         </variation>
                         <variation key="widthClass=compact">
                             <mask key="subviews">
                                 <include reference="h65-x0-6LE"/>
-                                <include reference="NF8-KO-t9m"/>
                                 <include reference="1C3-3f-98i"/>
+                                <include reference="qOk-C5-2fj"/>
+                                <include reference="NF8-KO-t9m"/>
+                            </mask>
+                            <mask key="constraints">
+                                <include reference="UZV-73-MOR"/>
+                                <include reference="hjJ-A1-vCH"/>
+                                <include reference="tx2-hN-4qP"/>
+                                <include reference="Psl-A9-lXO"/>
+                                <include reference="jXJ-Z7-2Kb"/>
+                                <include reference="oPL-ER-7Qp"/>
                             </mask>
                         </variation>
                     </view>
+                    <navigationItem key="navigationItem" id="CXo-CX-gpP"/>
                     <connections>
                         <outlet property="mapDetail" destination="NF8-KO-t9m" id="vJA-k2-Enf"/>
                         <outlet property="newCollectionBtn" destination="1C3-3f-98i" id="nuc-lu-LdX"/>
@@ -141,4 +194,5 @@
             <point key="canvasLocation" x="652.5" y="340"/>
         </scene>
     </scenes>
+    <color key="tintColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
 </document>
