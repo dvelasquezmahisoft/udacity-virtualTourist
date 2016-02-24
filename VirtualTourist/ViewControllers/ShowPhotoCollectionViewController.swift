@@ -19,6 +19,7 @@ class ShowPhotoCollectionController: UIViewController {
     //MARK: Logic Vars
     var pinLocation:PinLocation?
     var photos:[String]?
+    var photoObjects:[Photo]?
     let regionRadius: CLLocationDistance = 300
     
     
@@ -37,13 +38,18 @@ class ShowPhotoCollectionController: UIViewController {
         
         loadPinLocation()
         
+        loadPinImages()
+        
         //showRequestMode(show: false)
         
         photoCollection?.reloadData()
         
     }
     
-    
+    override func viewWillAppear(animated: Bool) {
+        
+        
+    }
     
     // MARK: Collection View Data Source
     func collectionView(photoCollection: UICollectionView, numberOfItemsInSection section: Int) -> Int {
@@ -71,7 +77,7 @@ class ShowPhotoCollectionController: UIViewController {
     
     @IBAction func addNewCollection(sender: AnyObject) {
         //TODO: Add new photo from location
-        
+        let pin = PersistenceManager.instance.getPin(pinLocation!.id!)
     }
     
     
@@ -79,7 +85,7 @@ class ShowPhotoCollectionController: UIViewController {
     func loadPinLocation(){
         
         //Show pin in the map
-        let annotation = PinAnnotation(title: "", coordinate:  CLLocationCoordinate2D(latitude:  pinLocation!.latitude, longitude:  pinLocation!.longitude))
+        let annotation = PinAnnotation(id: pinLocation!.id, coordinate:  CLLocationCoordinate2D(latitude:  pinLocation!.latitude, longitude:  pinLocation!.longitude))
         
         mapDetail.addAnnotation(annotation)
         
@@ -93,10 +99,27 @@ class ShowPhotoCollectionController: UIViewController {
         
     }
     
+    func loadPinImages(){
     
+       let pin = PersistenceManager.instance.getPin(pinLocation!.id!)
+        
+       print(pin.photos)
+       
+       let photoSet = pin.photos
+    
+        if(photoSet!.count == 0){
+            print("Sin photos")
+            //TODO: Traer las imagenes del otro lado
+        }
+        
+        for photo in photoSet!{
+            photoObjects?.append(photo as! Photo)
+        }
+        
+        
+    }
 
     @IBAction func goBack(sender: AnyObject) {
-        
         self.dismissViewControllerAnimated(true, completion: nil)
     }
 }

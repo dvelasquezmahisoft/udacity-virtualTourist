@@ -88,45 +88,110 @@ class PersistenceManager: NSObject {
         
     }
     
-    func getPhotosPin(pin: Pin) -> [Photo]{
-        
-        //TODO: Use the pin information
+    func getPhotosPin(pin: PinLocation) -> NSSet{
         
         let appDelegate = UIApplication.sharedApplication().delegate as! AppDelegate
         let managedContext = appDelegate.managedObjectContext
-        let fetchRequest = NSFetchRequest(entityName: "Photo")
+        let fetchRequest = NSFetchRequest(entityName: "Pin")
+        fetchRequest.predicate = NSPredicate(format: "identifier == %@", NSNumber(integer: pin.id!))
         
         do {
             
             let results = try managedContext.executeFetchRequest(fetchRequest)
-            return results as! [Photo]
+            
+            
+            guard results.count != 0 else{
+                return NSSet()
+            }
+            
+            let pin = results[0] as! Pin
+            
+            return pin.photos!
             
         } catch let error as NSError {
             print("Could not fetch \(error), \(error.userInfo)")
-            return [Photo]()
+            return  NSSet()
         }
         
     }
     
+
+    func getPin(id: Int) -> Pin{
+        
+        let appDelegate = UIApplication.sharedApplication().delegate as! AppDelegate
+        let managedContext = appDelegate.managedObjectContext
+        let fetchRequest = NSFetchRequest(entityName: "Pin")
+        fetchRequest.predicate = NSPredicate(format: "identifier == %@", NSNumber(integer: id))
+        
+        do {
+            let results = try managedContext.executeFetchRequest(fetchRequest)
+            
+            guard results.count != 0 else{
+                return Pin()
+            }
+            
+            return results[0] as! Pin
+            
+        } catch let error as NSError {
+            print("Could not fetch \(error), \(error.userInfo)")
+            return Pin()
+        }
+    
+    }
     
     //MARK: Save Methods
     
-    func savePin(name: String, lat: NSNumber, lon: NSNumber) -> Bool{
+    func savePin(lat: NSNumber, lon: NSNumber) -> Pin?{
         
         let entity =  NSEntityDescription.entityForName("Pin", inManagedObjectContext:managedContext)
         
         let pin = NSManagedObject(entity: entity!, insertIntoManagedObjectContext: managedContext)
         
-        pin.setValue(name, forKey: "name")
+        
+        let pins = getLocationPins()
+        
+        pin.setValue(pins.count, forKey: "identifier")
         pin.setValue(lat, forKey: "lat")
         pin.setValue(lon, forKey: "lon")
         
         do {
             try managedContext.save()
-            return true
+            return getPin(pins.count)
         } catch let error as NSError {
             print("Could not save \(error), \(error.userInfo)")
-            return false
+            return nil
         }
+    }
+    
+    
+    func savePhoto(id: NSNumber, image: NSData) -> Pin?{
+        
+        
+        // Create Photo
+        let entityPhoto = NSEntityDescription.entityForName("Photo", inManagedObjectContext:managedContext)
+        
+        let newPhoto = NSManagedObject(entity: entityPhoto!, insertIntoManagedObjectContext:managedContext)
+        
+        // Populate Address
+        newPhoto.setValue(image, forKey: "content")
+        newPhoto.setValue("Photo", forKey: "name")
+        
+        let pin = getPin(id.integerValue)
+        
+        // Add Photo to Pin
+        pin.setValue(NSSet(object: newPhoto), forKey: "photos")
+        
+        do {
+            try pin.managedObjectContext?.save()
+            
+            return pin
+        
+        } catch {
+            let saveError = error as NSError
+            print(saveError)
+            
+            return nil
+        }
+        
     }
 }

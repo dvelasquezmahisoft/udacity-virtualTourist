@@ -7,15 +7,16 @@
 //
 
 import MapKit
+import CoreData
 
 class PinAnnotation:  NSObject, MKAnnotation {
     
-    let title: String?
+    let id: Int?
     let coordinate: CLLocationCoordinate2D
     
-    init(title: String, coordinate: CLLocationCoordinate2D) {
+    init(id: Int?, coordinate: CLLocationCoordinate2D) {
         
-        self.title = title
+        self.id = id
         self.coordinate = coordinate
         
         super.init()

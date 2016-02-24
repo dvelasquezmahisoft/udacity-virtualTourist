@@ -8,23 +8,12 @@
 
 
 import UIKit
+import CoreData
 
 struct PinLocation {
     
     var latitude:Double
     var longitude:Double
-    
-    
-    func toJSON() -> [String : AnyObject]{
-        
-        let dic:NSMutableDictionary = NSMutableDictionary()
-        
-        dic["latitude"]  = self.latitude
-        dic["longitude"] = self.longitude
-        
-        let json:NSDictionary = dic
-        
-        return json as! [String : AnyObject]
-    }
+    var id: Int?
     
 }

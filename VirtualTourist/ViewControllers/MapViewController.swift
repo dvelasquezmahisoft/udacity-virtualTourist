@@ -21,7 +21,7 @@ class MapViewController: UIViewController {
     
     var locationManager:CLLocationManager!
     var updating:Bool?
-    var newPin:PinAnnotation?
+    var newPin:PinLocation?
     let regionRadius: CLLocationDistance = 1000
     
     //MARK: Life Cycle Methods
@@ -64,9 +64,8 @@ class MapViewController: UIViewController {
         let span = PersistenceManager.instance.getCurrentZoom()
         let coord = PersistenceManager.instance.getCurrentLocation()
         
-       let savedRegion = MKCoordinateRegion(center: coord, span: span)
-        
-        print(savedRegion)
+       //let savedRegion = MKCoordinateRegion(center: coord, span: span)
+      //  print(savedRegion)
         
         let region = MKCoordinateRegionMake(coord, MKCoordinateSpanMake(span.latitudeDelta/3.2880363685, span.longitudeDelta/3.2187500494))
         
@@ -84,22 +83,24 @@ class MapViewController: UIViewController {
          
             let destination = (segue.destinationViewController as! ShowPhotoCollectionController)
             
-            destination.pinLocation = PinLocation(latitude: newPin!.coordinate.latitude, longitude: newPin!.coordinate.longitude)
+            destination.pinLocation = newPin
             
         }
     }
     
     func addNewPin(pin: PinAnnotation){
         
-        if(PersistenceManager.instance.savePin(pin.title!, lat: pin.coordinate.latitude, lon: pin.coordinate.longitude) == true){
-            loadPins()
-            //showAlert("Pin \(pin.title!) add successfully ", viewController: self)
+        let newP = PersistenceManager.instance.savePin(pin.coordinate.latitude, lon: pin.coordinate.longitude)
+        
+        if newP != nil{
             
-            newPin = pin
+            loadPins()
+            
+            newPin = PinLocation(latitude: Double(newP!.lat!), longitude: Double(newP!.lon!), id: Int(newP!.identifier!))
             
             performSegueWithIdentifier("showPhotoCollection", sender: self)
         }else{
-            showAlert("Could not save pin \(pin.title!)", viewController: self)
+            showAlert("Could not save pin", viewController: self)
         }
      
     }
@@ -115,7 +116,7 @@ class MapViewController: UIViewController {
         let touchPoint = gestureRecognizer.locationInView(mapView)
         let newCoordinates = mapView.convertPoint(touchPoint, toCoordinateFromView: mapView)
         
-        let annotation = PinAnnotation(title: "", coordinate: newCoordinates)
+        let annotation = PinAnnotation(id: nil, coordinate: newCoordinates)
         
         if gestureRecognizer.state == .Ended{
             
@@ -149,13 +150,15 @@ class MapViewController: UIViewController {
             showAlert(Messages.mNoPins, viewController: self)
             return
         }
-        
+   
         for sLocation in pins{
             
             let lat = sLocation.valueForKey("lat") as! NSNumber
             let lon = sLocation.valueForKey("lon") as! NSNumber
+            let id = sLocation.valueForKey("identifier") as! NSNumber
             
-            let annotation = PinAnnotation(title: sLocation.valueForKey("name") as! String,
+            
+            let annotation = PinAnnotation(id: id.integerValue,
                 coordinate:  CLLocationCoordinate2D(latitude: lat.doubleValue, longitude: lon.doubleValue))
             
             //Add pin annotation in the map
@@ -195,10 +198,12 @@ extension MapViewController: MKMapViewDelegate {
         
         let pin = view.annotation as! PinAnnotation
         
-        newPin = pin
+        let newP = PersistenceManager.instance.getPin(pin.id!)
+        
+        newPin = PinLocation(latitude: Double(newP.lat!), longitude: Double(newP.lon!), id: Int(newP.identifier!))
+        
         
         performSegueWithIdentifier("showPhotoCollection", sender: self)
-        
         
     }
     
@@ -208,8 +213,8 @@ extension MapViewController: MKMapViewDelegate {
         
        PersistenceManager.instance.saveCurrentZoom(mapView.region.span)
         
-        print(mapView.region.span)
-        print(mapView.region.center)
+  //      print(mapView.region.span)
+    //    print(mapView.region.center)
         
     }
 }
