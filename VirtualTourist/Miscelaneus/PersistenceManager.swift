@@ -166,20 +166,26 @@ class PersistenceManager: NSObject {
     
     func savePhoto(id: NSNumber, image: NSData) -> Pin?{
         
+        //Get pin
+        let pin = getPin(id.integerValue)
         
         // Create Photo
         let entityPhoto = NSEntityDescription.entityForName("Photo", inManagedObjectContext:managedContext)
         
-        let newPhoto = NSManagedObject(entity: entityPhoto!, insertIntoManagedObjectContext:managedContext)
         
-        // Populate Address
+        let newPhoto = NSManagedObject(entity: entityPhoto!, insertIntoManagedObjectContext:managedContext)
+        //Populate Photo
         newPhoto.setValue(image, forKey: "content")
         newPhoto.setValue("Photo", forKey: "name")
         
-        var pin = getPin(id.integerValue)
-        
+    
         // Add Photo to Pin
-        pin.setValue(NSSet(object: newPhoto), forKey: "photos")
+        //pin.setValue(NSSet(object: newPhoto), forKey: "photos")
+        
+        // Add Address to Person
+        let photos = pin.mutableSetValueForKey("photos")
+        photos.addObject(newPhoto)
+        
         
         do {
             try pin.managedObjectContext?.save()
@@ -192,5 +198,23 @@ class PersistenceManager: NSObject {
             return nil
         }
         
+    }
+    
+    //MARK: Cleaner
+    func removeAllPhotos(id: NSNumber) -> Pin?{
+        
+        let pin = getPin(id.integerValue)
+        
+        pin.setValue(nil, forKey:"photos")
+        
+        do {
+            try pin.managedObjectContext?.save()
+            return pin
+        } catch {
+            
+            let saveError = error as NSError
+            print(saveError)
+            return nil
+        }
     }
 }
