@@ -122,9 +122,78 @@ class ShowPhotoCollectionController: UIViewController {
     @IBAction func goBack(sender: AnyObject) {
         self.dismissViewControllerAnimated(true, completion: nil)
     }
+    
+    
+    
+    //MARK: Photo management
+    
+    func showPhotoOptionsActionSheet(){
+        
+        //Show Alert
+        let alertController = UIAlertController(title: "Select image source", message: "", preferredStyle: .ActionSheet)
+        
+        let capturePhotoAction = UIAlertAction(title: Messages.bCamera, style: UIAlertActionStyle.Default) {
+            (action) in self.shootPhoto()
+        }
+        
+        let photoLibraryAction = UIAlertAction(title: Messages.bLibrary, style: UIAlertActionStyle.Default) {
+            (action) in self.getPhotoFromLibrary()
+        }
+        
+        let cancelAction = UIAlertAction(title: Messages.bCancel, style: UIAlertActionStyle.Cancel, handler:  nil)
+        
+        if(UIImagePickerController.isSourceTypeAvailable(.Camera)){
+            alertController.addAction(capturePhotoAction)
+        }
+        
+        alertController.addAction(photoLibraryAction)
+        alertController.addAction(cancelAction)
+        
+        presentViewController(alertController, animated: true, completion: nil)
+        
+    }
+    
+    func shootPhoto(){
+        let pickerController = UIImagePickerController()
+        pickerController.delegate = self
+        pickerController.allowsEditing = true
+        pickerController.sourceType = .Camera
+        pickerController.modalPresentationStyle = .FullScreen
+        pickerController.cameraCaptureMode = .Photo
+        presentViewController(pickerController, animated: true, completion: nil)
+    }
+    
+    func getPhotoFromLibrary(){
+        let pickerController = UIImagePickerController()
+        pickerController.delegate = self
+        pickerController.sourceType = .PhotoLibrary
+        presentViewController(pickerController, animated: true, completion: nil)
+    }
+    
 }
 
 
+
+extension ShowPhotoCollectionController: UIImagePickerControllerDelegate, UINavigationControllerDelegate{
+    
+    func imagePickerControllerDidCancel(picker: UIImagePickerController) {
+        dismissViewControllerAnimated(true, completion: nil)
+    }
+    
+    func imagePickerController(picker: UIImagePickerController, didFinishPickingMediaWithInfo info: [String : AnyObject]) {
+        
+        if let chosenImage = info[UIImagePickerControllerOriginalImage] as? UIImage{
+            
+            PersistenceManager.instance.savePhoto(pinLocation!.id!, image: UIImagePNGRepresentation(chosenImage)!)
+            
+            loadPinImages()
+            
+            dismissViewControllerAnimated(true, completion: nil)
+            
+        }
+        
+    }
+}
 
 extension ShowPhotoCollectionController: MKMapViewDelegate {
     

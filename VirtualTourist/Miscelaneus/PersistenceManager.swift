@@ -176,16 +176,15 @@ class PersistenceManager: NSObject {
         newPhoto.setValue(image, forKey: "content")
         newPhoto.setValue("Photo", forKey: "name")
         
-        let pin = getPin(id.integerValue)
+        var pin = getPin(id.integerValue)
         
         // Add Photo to Pin
         pin.setValue(NSSet(object: newPhoto), forKey: "photos")
         
         do {
             try pin.managedObjectContext?.save()
-            
+           
             return pin
-        
         } catch {
             let saveError = error as NSError
             print(saveError)

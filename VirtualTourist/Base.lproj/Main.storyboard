@@ -100,7 +100,9 @@
                             </collectionView>
                             <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="1C3-3f-98i">
                                 <rect key="frame" x="-23" y="-15" width="46" height="30"/>
-                                <state key="normal" title="New Collection"/>
+                                <state key="normal" title="New Collection">
+                                    <color key="titleColor" red="0.22352941179999999" green="0.38431372549999998" blue="0.71372549019999998" alpha="1" colorSpace="calibratedRGB"/>
+                                </state>
                                 <variation key="widthClass=compact" fixedFrame="YES">
                                     <rect key="frame" x="0.0" y="543" width="400" height="57"/>
                                 </variation>

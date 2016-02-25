@@ -26,5 +26,11 @@ struct Messages {
     static let bDismiss = "Dismiss"
     static let bCancel = "Cancel"
     static let bOverwrite = "Overwrite"
+     static let bYes = "Yes"
+    static let bNo  = "No"
+    
+    static let bCamera  = "Camera"
+    static let bLibrary  = "Library"
+    
     
 }
