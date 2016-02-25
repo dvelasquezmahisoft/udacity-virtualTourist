@@ -15,18 +15,37 @@ class ShowPhotoCollectionController: UIViewController {
     @IBOutlet weak var mapDetail: MKMapView!
     @IBOutlet weak var photoCollection: UICollectionView!
     @IBOutlet weak var newCollectionBtn: UIButton!
+    @IBOutlet weak var overlay: UIView!
+    @IBOutlet weak var activityIndicator: UIActivityIndicatorView!
+    @IBOutlet weak var noImagesLbl: UILabel!
     
     //MARK: Logic Vars
     var pinLocation:PinLocation?
     var photos:[String]?
-    var photoObjects:[Photo]?
+    var photoObjects:[Photo] = [Photo]()
     let regionRadius: CLLocationDistance = 300
+    var connectionAPI:ConnectionAPI = ConnectionAPI()
     
+    func showRequestMode(show: Bool){
+        
+        if(show){
+            activityIndicator.startAnimating()
+        }else{
+            activityIndicator.stopAnimating()
+        }
+        
+        activityIndicator.hidden = !show
+        overlay.hidden = !show
+    }
     
     //MARK: Life Cycle Methods
     override func viewDidLoad() {
         
+        
         super.viewDidLoad()
+        
+        
+        showRequestMode(false)
         
         //Set initial location
         let initialLocation = CLLocation(latitude: (pinLocation?.latitude)!, longitude: (pinLocation?.longitude)!)
@@ -40,9 +59,9 @@ class ShowPhotoCollectionController: UIViewController {
         
         loadPinImages()
         
-        //showRequestMode(show: false)
-        
         photoCollection?.reloadData()
+        
+        self.connectionAPI.delegate = self
         
     }
     
@@ -53,15 +72,17 @@ class ShowPhotoCollectionController: UIViewController {
     
     // MARK: Collection View Data Source
     func collectionView(photoCollection: UICollectionView, numberOfItemsInSection section: Int) -> Int {
-        return photos!.count
+        return photoObjects.count
     }
     
     func collectionView(photoCollection: UICollectionView, cellForItemAtIndexPath indexPath: NSIndexPath) -> UICollectionViewCell {
         
         let cell = photoCollection.dequeueReusableCellWithReuseIdentifier(PhotoCollectionCell.identifier, forIndexPath: indexPath) as! PhotoCollectionCell
         
+        let photo = photoObjects[indexPath.row]
+        
         //Set cell with meme values
-        cell.setup()
+        cell.setup(photo.imageUrl!)
         
         return cell
     }
@@ -76,8 +97,7 @@ class ShowPhotoCollectionController: UIViewController {
     //MARK: IBActions
     
     @IBAction func addNewCollection(sender: AnyObject) {
-        //TODO: Add new photo from location
-        let pin = PersistenceManager.instance.getPin(pinLocation!.id!)
+        getFlickrPhotos()
     }
     
     
@@ -100,31 +120,39 @@ class ShowPhotoCollectionController: UIViewController {
     }
     
     func loadPinImages(){
-    
-        let i = UIImage(named: "Launch")
-        let imageData: NSData = UIImagePNGRepresentation(i!)!
-        
-        PersistenceManager.instance.savePhoto(pinLocation!.id!, image: imageData)
         
         let pin = PersistenceManager.instance.getPin(pinLocation!.id!)
         
         let photoSet = pin.photos?.allObjects
         
         if(photoSet!.count == 0){
-            print("Sin photos")
-           
-            //TODO: Traer las imagenes del otro lado
+            getFlickrPhotos()
+            return
         }
         
+        
         for photo in photoSet!{
-            photoObjects?.append((photo as! Photo))
+            photoObjects.append((photo as! Photo))
         }
+        
+        self.photoCollection.reloadData()
         
         
     }
-
+    
     @IBAction func goBack(sender: AnyObject) {
-        self.dismissViewControllerAnimated(true, completion: nil)
+        dismissViewControllerAnimated(true, completion: nil)
+    }
+    
+    
+    // MARK: - Photos
+    
+    private func getFlickrPhotos() {
+        
+        showRequestMode(true)
+        self.noImagesLbl.hidden = true
+        
+        FlickrManagement.sharedInstance().photosSearch(pinLocation!, connection: connectionAPI)
     }
     
     
@@ -133,6 +161,45 @@ class ShowPhotoCollectionController: UIViewController {
 }
 
 
+extension ShowPhotoCollectionController: ConnectionAPIProtocol{
+    
+    func didReceiveSuccess(results results: AnyObject) {
+        
+        let photosResult = results as! NSArray
+        
+        showRequestMode(false)
+        noImagesLbl.hidden = (photosResult.count != 0)
+        
+        
+        for photo in photosResult {
+            
+            PersistenceManager.instance.savePhoto(self.pinLocation!.id!, imagePath: photo["remotePath"] as! String)
+        
+            //photo.pin = self.pinLocation
+        }
+        
+        // dispatch_async(dispatch_get_main_queue()) {
+        //   CoreDataStackManager.sharedInstance.saveContext()
+        //}
+        
+        let pin = PersistenceManager.instance.getPin(self.pinLocation!.id!)
+        let photoSet = pin.photos?.allObjects
+        
+        for photo in photoSet!{
+            self.photoObjects.append((photo as! Photo))
+        }
+        
+        
+        self.photoCollection.reloadData()
+    }
+    
+    func didReceiveFail(error error: NSError, errorObject:AnyObject) {
+        
+        showRequestMode(true)
+        noImagesLbl.hidden = false
+    }
+    
+}
 
 extension ShowPhotoCollectionController: MKMapViewDelegate {
     

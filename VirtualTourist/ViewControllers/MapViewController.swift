@@ -22,7 +22,9 @@ class MapViewController: UIViewController {
     var locationManager:CLLocationManager!
     var updating:Bool?
     var newPin:PinLocation?
-    let regionRadius: CLLocationDistance = 1000
+    var dragEnded = false
+    
+    let regionRadius: CLLocationDistance = 1
     
     //MARK: Life Cycle Methods
     override func viewDidLoad() {
@@ -61,15 +63,15 @@ class MapViewController: UIViewController {
     
     func centerMapOnLocation() {
         
-        let span = PersistenceManager.instance.getCurrentZoom()
+        let zoom = PersistenceManager.instance.getCurrentZoom()
         let coord = PersistenceManager.instance.getCurrentLocation()
         
-       //let savedRegion = MKCoordinateRegion(center: coord, span: span)
-      //  print(savedRegion)
         
-        let region = MKCoordinateRegionMake(coord, MKCoordinateSpanMake(span.latitudeDelta/3.2880363685, span.longitudeDelta/3.2187500494))
-        
-        mapView.setRegion(region, animated: true)
+        if coord.latitude != 0 && coord.longitude != 0{
+            let storedCamera = MKMapCamera(lookingAtCenterCoordinate: coord, fromEyeCoordinate: coord, eyeAltitude: CLLocationDistance(zoom))
+            
+            mapView.setCamera(storedCamera, animated: false)
+        }
     }
     
     
@@ -166,6 +168,20 @@ class MapViewController: UIViewController {
         }
     }
     
+    func updatePin(pin: PinAnnotation) {
+        /*if !pin.photos.isEmpty {
+            for photo in pin.photos {
+                photo.pin = nil
+            }
+        }
+        if !pin.places.isEmpty {
+            for place in pin.places {
+                place.pin = nil
+            }
+        }
+        CoreDataStackManager.sharedInstance.saveContext()
+        getFlickrPhotoProperties(pin)*/
+    }
     
     
 }
@@ -184,9 +200,10 @@ extension MapViewController: MKMapViewDelegate {
                     view = dequeuedView
             } else {
                 view = MKPinAnnotationView(annotation: annotation, reuseIdentifier: identifier)
-                //view.canShowCallout = true
-                //view.calloutOffset = CGPoint(x: -5, y: 5)
-               // view.rightCalloutAccessoryView = UIButton(type: .DetailDisclosure)
+                view.animatesDrop = true
+                view.draggable = true
+            
+                view.setSelected(true, animated: false)
             }
             return view
         }
@@ -196,13 +213,20 @@ extension MapViewController: MKMapViewDelegate {
     
     func mapView(mapView: MKMapView, didSelectAnnotationView view: MKAnnotationView){
         
+        mapView.deselectAnnotation(view.annotation, animated: false)
+        view.setSelected(true, animated: false)
+        
         let pin = view.annotation as! PinAnnotation
         
+        //Update Pin
+        if dragEnded == true {
+            updatePin(pin)
+            dragEnded = false
+            return
+        }
+        
         let newP = PersistenceManager.instance.getPin(pin.id!)
-        
         newPin = PinLocation(latitude: Double(newP.lat!), longitude: Double(newP.lon!), id: Int(newP.identifier!))
-        
-        
         performSegueWithIdentifier("showPhotoCollection", sender: self)
         
     }
@@ -211,19 +235,38 @@ extension MapViewController: MKMapViewDelegate {
         
        PersistenceManager.instance.saveCurrentLocation(mapView.centerCoordinate.latitude, lon: mapView.centerCoordinate.longitude)
         
-       PersistenceManager.instance.saveCurrentZoom(mapView.region.span)
+       PersistenceManager.instance.saveCurrentZoom(mapView.camera.altitude)
         
-  //      print(mapView.region.span)
-    //    print(mapView.region.center)
+    }
+    
+    func mapView(mapView: MKMapView, annotationView view: MKAnnotationView, didChangeDragState newState: MKAnnotationViewDragState, fromOldState oldState: MKAnnotationViewDragState) {
         
+        if newState == MKAnnotationViewDragState.Ending {
+            dragEnded = true
+        }
     }
 }
 
 extension MapViewController: CLLocationManagerDelegate{
     
     func locationManager(manager: CLLocationManager, didUpdateLocations locations: [CLLocation]) {
-        //let userLocation:CLLocation = locations[0]
-       // centerMapOnLocation(userLocation)
+        
+        let coord = PersistenceManager.instance.getCurrentLocation()
+        
+        
+        if coord.latitude == 0 && coord.longitude == 0{
+        
+            let userLocation:CLLocation = locations[0]
+            //Set initial location
+            let initialLocation = CLLocation(latitude: userLocation.coordinate.latitude, longitude: userLocation.coordinate.longitude)
+            
+            let coordinateRegion = MKCoordinateRegionMakeWithDistance(initialLocation.coordinate,
+                regionRadius * 2.0, regionRadius * 2.0)
+            
+            mapView.setRegion(coordinateRegion, animated: true)
+
+        }
+
     }
     
 }

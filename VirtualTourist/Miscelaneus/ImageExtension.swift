@@ -19,7 +19,7 @@ extension UIImageView{
             }.resume()
     }
     
-    func downloadImage(url: NSURL, placeHolderName: String = "userDefault"){
+    func downloadImage(url: NSURL, placeHolderName: String = "Launch"){
         
         //Set placeholder image
         self.image = UIImage(named: placeHolderName)

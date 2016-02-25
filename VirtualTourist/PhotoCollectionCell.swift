@@ -10,11 +10,16 @@ import UIKit
 
 class PhotoCollectionCell: UICollectionViewCell {
     
-    @IBOutlet weak var memeImage: UIImageView!
+    @IBOutlet weak var image: UIImageView!
     
     class var identifier: String { return String.className(self) }
     
-    func setup(){
-    
+    func setup(photoUrl: String){
+        self.backgroundColor = .grayColor()
+        let url = NSURL(string: photoUrl)
+        
+        dispatch_async(dispatch_get_main_queue()) { () -> Void in
+            self.image.downloadImage(url!)
+        }
     }
 }

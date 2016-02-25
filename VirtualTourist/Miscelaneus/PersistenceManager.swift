@@ -39,19 +39,15 @@ class PersistenceManager: NSObject {
     }
     
  
-    func saveCurrentZoom(zoom:MKCoordinateSpan){
-        NSUserDefaults.standardUserDefaults().setDouble(zoom.latitudeDelta, forKey: "userZoomLat")
-        NSUserDefaults.standardUserDefaults().setDouble(zoom.longitudeDelta, forKey: "userZoomLon")
+    func saveCurrentZoom(zoom:Double){
+        NSUserDefaults.standardUserDefaults().setDouble(zoom, forKey: "userZoom")
     }
     
-    func getCurrentZoom()-> MKCoordinateSpan{
+    func getCurrentZoom()-> Double{
 
-        let lat = NSUserDefaults.standardUserDefaults().doubleForKey("userZoomLat")
-        let lon = NSUserDefaults.standardUserDefaults().doubleForKey("userZoomLon")
-        
-        let coord = MKCoordinateSpanMake(lat, lon)
-        
-        return coord
+        let zoom = NSUserDefaults.standardUserDefaults().doubleForKey("userZoom")
+    
+        return zoom
     }
     
     func saveCurrentLocation(lat:Double, lon:Double){
@@ -164,7 +160,7 @@ class PersistenceManager: NSObject {
     }
     
     
-    func savePhoto(id: NSNumber, image: NSData) -> Pin?{
+    func savePhoto(id: NSNumber, imagePath: String) -> Pin?{
         
         //Get pin
         let pin = getPin(id.integerValue)
@@ -175,7 +171,7 @@ class PersistenceManager: NSObject {
         
         let newPhoto = NSManagedObject(entity: entityPhoto!, insertIntoManagedObjectContext:managedContext)
         //Populate Photo
-        newPhoto.setValue(image, forKey: "content")
+        newPhoto.setValue(imagePath, forKey: "imageUrl")
         newPhoto.setValue("Photo", forKey: "name")
         
     
