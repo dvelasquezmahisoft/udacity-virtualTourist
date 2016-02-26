@@ -67,7 +67,6 @@ class PersistenceManager: NSObject {
     
     func getLocationPins() -> [Pin]{
         
-        let appDelegate = UIApplication.sharedApplication().delegate as! AppDelegate
         let managedContext = appDelegate.managedObjectContext
         let fetchRequest = NSFetchRequest(entityName: "Pin")
         

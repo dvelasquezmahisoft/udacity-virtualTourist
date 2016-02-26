@@ -168,22 +168,6 @@ class MapViewController: UIViewController {
         }
     }
     
-    func updatePin(pin: PinAnnotation) {
-        /*if !pin.photos.isEmpty {
-            for photo in pin.photos {
-                photo.pin = nil
-            }
-        }
-        if !pin.places.isEmpty {
-            for place in pin.places {
-                place.pin = nil
-            }
-        }
-        CoreDataStackManager.sharedInstance.saveContext()
-        getFlickrPhotoProperties(pin)*/
-    }
-    
-    
 }
 
 
@@ -220,7 +204,6 @@ extension MapViewController: MKMapViewDelegate {
         
         //Update Pin
         if dragEnded == true {
-            updatePin(pin)
             dragEnded = false
             return
         }
@@ -252,7 +235,6 @@ extension MapViewController: CLLocationManagerDelegate{
     func locationManager(manager: CLLocationManager, didUpdateLocations locations: [CLLocation]) {
         
         let coord = PersistenceManager.instance.getCurrentLocation()
-        
         
         if coord.latitude == 0 && coord.longitude == 0{
         
