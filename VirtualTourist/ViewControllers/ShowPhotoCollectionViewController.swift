@@ -10,18 +10,18 @@ import UIKit
 import MapKit
 import CoreData
 
-class ShowPhotoCollectionController: BaseViewController, NSFetchedResultsControllerDelegate {
+class ShowPhotoCollectionController: BaseViewController {
     
-    @IBOutlet weak var mapView: MKMapView!
+    @IBOutlet weak var mapDetail: MKMapView!
     @IBOutlet weak var collectionView: UICollectionView!
     @IBOutlet weak var noImagesLbl: UILabel!
     
-    //MARK: Logic Vars
+    //MARK: Logic
     let regionRadius: CLLocationDistance = 300
     var pin: Pin!
     var connectionAPI:ConnectionAPI = ConnectionAPI()
     
-    // Cell layout properties
+   
     let cellsPerRowInPortraitMode: CGFloat = 3
     let cellsPerRowInLandscpaeMode: CGFloat = 6
     let minimumSpacingPerCell: CGFloat = 5
@@ -83,7 +83,7 @@ class ShowPhotoCollectionController: BaseViewController, NSFetchedResultsControl
         //Show pin in the map
         let annotation = PinAnnotation(id: Int(pin.identifier!), coordinate:  CLLocationCoordinate2D(latitude:  Double(pin.lat!), longitude:  Double(pin.lon!)))
         
-        mapView.addAnnotation(annotation)
+        mapDetail.addAnnotation(annotation)
         
         //Set initial location
         let initialLocation = CLLocation(latitude: Double(pin.lat!), longitude: Double(pin.lon!))
@@ -91,7 +91,7 @@ class ShowPhotoCollectionController: BaseViewController, NSFetchedResultsControl
         let coordinateRegion = MKCoordinateRegionMakeWithDistance(initialLocation.coordinate,
             regionRadius * 2.0, regionRadius * 2.0)
         
-        mapView.setRegion(coordinateRegion, animated: true)
+        mapDetail.setRegion(coordinateRegion, animated: true)
     }
     
     
@@ -164,11 +164,40 @@ class ShowPhotoCollectionController: BaseViewController, NSFetchedResultsControl
         super.viewWillTransitionToSize(size, withTransitionCoordinator: coordinator)
         collectionView.performBatchUpdates(nil, completion: nil)
     }
+}
+
+extension ShowPhotoCollectionController: UICollectionViewDataSource, UICollectionViewDelegate{
     
+    func numberOfSectionsInCollectionView(collectionView: UICollectionView) -> Int {
+        return 1
+    }
     
+    func collectionView(collectionView: UICollectionView,
+        numberOfItemsInSection section: Int) -> Int {
+            
+            return self.fetchedController.sections![section].numberOfObjects
+    }
     
+    func collectionView(collectionView: UICollectionView, cellForItemAtIndexPath indexPath: NSIndexPath) -> UICollectionViewCell {
+        
+        let cell = collectionView.dequeueReusableCellWithReuseIdentifier(PhotoCollectionCell.identifier, forIndexPath: indexPath) as! PhotoCollectionCell
+        
+        let photo = fetchedController.objectAtIndexPath(indexPath) as! Photo
+        
+        //Set cell with meme values
+        cell.setup(photo.imageUrl!)
+        
+        return cell
+    }
     
-    // MARK: - NSFetchedResultsController delegates
+    func collectionView(collectionView: UICollectionView, didSelectItemAtIndexPath indexPath: NSIndexPath) {
+        deletePhoto(indexPath)
+    }
+
+}
+
+
+extension ShowPhotoCollectionController: NSFetchedResultsControllerDelegate{
     
     func controllerWillChangeContent(controller: NSFetchedResultsController) {
         insertedIndexPaths = [NSIndexPath]()
@@ -205,41 +234,8 @@ class ShowPhotoCollectionController: BaseViewController, NSFetchedResultsControl
             }
             }, completion: nil)
     }
-}
 
-extension ShowPhotoCollectionController: UICollectionViewDataSource, UICollectionViewDelegate{
-    
-    func numberOfSectionsInCollectionView(collectionView: UICollectionView) -> Int {
-        return 1
-    }
-    
-    func collectionView(collectionView: UICollectionView,
-        numberOfItemsInSection section: Int) -> Int {
-            
-            return self.fetchedController.sections![section].numberOfObjects
-    }
-    
-    func collectionView(collectionView: UICollectionView, cellForItemAtIndexPath indexPath: NSIndexPath) -> UICollectionViewCell {
-        
-        let cell = collectionView.dequeueReusableCellWithReuseIdentifier(PhotoCollectionCell.identifier, forIndexPath: indexPath) as! PhotoCollectionCell
-        
-        let photo = fetchedController.objectAtIndexPath(indexPath) as! Photo
-        
-        //Set cell with meme values
-        cell.setup(photo.imageUrl!)
-        
-        return cell
-    }
-    
-    func collectionView(collectionView: UICollectionView, didSelectItemAtIndexPath indexPath: NSIndexPath) {
-        deletePhoto(indexPath)
-    }
-    
-    
-    
-    
 }
-
 
 extension ShowPhotoCollectionController: ConnectionAPIProtocol{
     
@@ -452,130 +448,4 @@ PersistenceManager.instance.saveContext()
 
 }
 
-extension ShowPhotoCollectionController: MKMapViewDelegate {
-
-func mapView(mapView: MKMapView, viewForAnnotation annotation: MKAnnotation) -> MKAnnotationView? {
-if let annotation = annotation as? PinAnnotation {
-
-let identifier = "pin"
-var view: MKPinAnnotationView
-
-if let dequeuedView = mapView.dequeueReusableAnnotationViewWithIdentifier(identifier)
-as? MKPinAnnotationView {
-dequeuedView.annotation = annotation
-view = dequeuedView
-}else {
-view = MKPinAnnotationView(annotation: annotation, reuseIdentifier: identifier)
-view.canShowCallout = false
-view.calloutOffset = CGPoint(x: -5, y: 5)
-view.rightCalloutAccessoryView = nil
-}
-
-return view
-}
-
-return nil
-}
-}
-
-
-extension ShowPhotoCollectionController: NSFetchedResultsControllerDelegate{
-
-func controllerWillChangeContent(controller: NSFetchedResultsController) {
-
-insertedIndexPaths = [NSIndexPath]()
-deletedIndexPaths = [NSIndexPath]()
-updatedIndexPaths = [NSIndexPath]()
-
-showRequestMode(false)
-}
-
-func controller(controller: NSFetchedResultsController, didChangeObject anObject: AnyObject, atIndexPath indexPath: NSIndexPath?, forChangeType type: NSFetchedResultsChangeType, newIndexPath: NSIndexPath?) {
-
-switch type {
-case .Insert:
-insertedIndexPaths.append(newIndexPath!)
-case .Delete:
-deletedIndexPaths.append(indexPath!)
-case .Update:
-updatedIndexPaths.append(indexPath!)
-default:
-return
-}
-}
-
-func controllerDidChangeContent(controller: NSFetchedResultsController) {
-
-
-
-photoCollection.performBatchUpdates({
-
-for indexPath in self.insertedIndexPaths {
-self.photoCollection.insertItemsAtIndexPaths([indexPath])
-}
-for indexPath in self.deletedIndexPaths {
-self.photoCollection.deleteItemsAtIndexPaths([indexPath])
-}
-for indexPath in self.updatedIndexPaths {
-self.photoCollection.reloadItemsAtIndexPaths([indexPath])
-}
-}, completion: nil)
-
-}
-
-
-}
-
-
-extension ShowPhotoCollectionController: UICollectionViewDataSource, UICollectionViewDelegate{
-
-
-
-func collectionView(collectionView: UICollectionView, shouldHighlightItemAtIndexPath indexPath: NSIndexPath) -> Bool {
-
-return true
-}
-
-func collectionView(collectionView: UICollectionView, shouldSelectItemAtIndexPath indexPath: NSIndexPath) -> Bool {
-
-return true
-}
-
-func collectionView(collectionView: UICollectionView, didSelectItemAtIndexPath indexPath: NSIndexPath){
-//Delete the selected photo
-deletePhoto(indexPath)
-}
-
-
-func collectionView(collectionView: UICollectionView, didDeselectItemAtIndexPath indexPath: NSIndexPath) {
-
-}
-
-
-
-func numberOfSectionsInCollectionView(collectionView: UICollectionView) -> Int {
-return 1
-}
-
-// MARK: Collection View Data Source
-
-func collectionView(photoCollection: UICollectionView, numberOfItemsInSection section: Int) -> Int {
-return self.fetchedController.sections![section].numberOfObjects
-}
-
-func collectionView(photoCollection: UICollectionView, cellForItemAtIndexPath indexPath: NSIndexPath) -> UICollectionViewCell {
-
-let cell = photoCollection.dequeueReusableCellWithReuseIdentifier(PhotoCollectionCell.identifier, forIndexPath: indexPath) as! PhotoCollectionCell
-
-let photo = fetchedController.objectAtIndexPath(indexPath) as! Photo
-
-// let photo = photoObjects[indexPath.row]
-
-//Set cell with meme values
-cell.setup(photo.imageUrl!)
-
-return cell
-}
-
-}
 */

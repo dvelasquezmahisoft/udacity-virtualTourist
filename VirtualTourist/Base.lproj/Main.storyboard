@@ -308,7 +308,7 @@
                     <connections>
                         <outlet property="activityIndicator" destination="vff-R3-Yvp" id="WNH-GK-Smo"/>
                         <outlet property="collectionView" destination="h65-x0-6LE" id="x9o-oX-AyR"/>
-                        <outlet property="mapView" destination="NF8-KO-t9m" id="eBU-Wq-G0f"/>
+                        <outlet property="mapDetail" destination="NF8-KO-t9m" id="A3B-Iz-TNl"/>
                         <outlet property="noImagesLbl" destination="gQc-3S-pOz" id="58u-Qk-jCl"/>
                         <outlet property="overlay" destination="UG9-cx-TzO" id="wXN-WR-vIL"/>
                     </connections>
