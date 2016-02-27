@@ -33,3 +33,16 @@ extension UIImageView{
     }
     
 }
+
+extension UIImage{
+
+    func hasAlpha() -> Bool {
+        let alpha = CGImageGetAlphaInfo(self.CGImage)
+        switch alpha {
+        case .First, .Last, .PremultipliedFirst, .PremultipliedLast, .Only:
+            return true
+        case .None, .NoneSkipFirst, .NoneSkipLast:
+            return false
+        }
+    }
+}

@@ -32,11 +32,11 @@ class FlickrManagement: NSObject {
         return Singleton.instance
     }
     
-    func photosSearch(pin: PinLocation, connection: ConnectionAPI) {
+    func photosSearch(pin: Pin, connection: ConnectionAPI) {
         
         let methodArguments: [String:AnyObject] = [
             "method": METHOD_NAME,
-            "bbox": createBBoxString(pin.latitude, longitude: pin.longitude),
+            "bbox": createBBoxString(Double(pin.lat!), longitude: Double(pin.lon!)),
             "safe_search": SAFE_SEARCH,
             "per_page": PHOTOS_PER_PAGE,
             "page": PHOTOS_PER_PAGE,

@@ -83,33 +83,6 @@ class PersistenceManager: NSObject {
         
     }
     
-    func getPhotosPin(pin: PinLocation) -> NSSet{
-        
-        let appDelegate = UIApplication.sharedApplication().delegate as! AppDelegate
-        let managedContext = appDelegate.managedObjectContext
-        let fetchRequest = NSFetchRequest(entityName: "Pin")
-        fetchRequest.predicate = NSPredicate(format: "identifier == %@", NSNumber(integer: pin.id!))
-        
-        do {
-            
-            let results = try managedContext.executeFetchRequest(fetchRequest)
-            
-            
-            guard results.count != 0 else{
-                return NSSet()
-            }
-            
-            let pin = results[0] as! Pin
-            
-            return pin.photos!
-            
-        } catch let error as NSError {
-            print("Could not fetch \(error), \(error.userInfo)")
-            return  NSSet()
-        }
-        
-    }
-    
 
     func getPin(id: Int) -> Pin{
         
@@ -159,28 +132,28 @@ class PersistenceManager: NSObject {
     }
     
     
-    func savePhoto(id: NSNumber, imagePath: String) -> Pin?{
+    func savePhoto(pin: Pin, imagePath: String, name: String){
         
-        //Get pin
-        let pin = getPin(id.integerValue)
         
+        let photo = Photo(name: name , imageUrl: imagePath, context: managedContext)
+        
+        photo.pin = pin
+        
+        /*
         // Create Photo
         let entityPhoto = NSEntityDescription.entityForName("Photo", inManagedObjectContext:managedContext)
         
         
         let newPhoto = NSManagedObject(entity: entityPhoto!, insertIntoManagedObjectContext:managedContext)
+        
         //Populate Photo
         newPhoto.setValue(imagePath, forKey: "imageUrl")
-        newPhoto.setValue("Photo", forKey: "name")
-        
-    
-        // Add Photo to Pin
-        //pin.setValue(NSSet(object: newPhoto), forKey: "photos")
-        
+        newPhoto.setValue(name, forKey: "name")
+        newPhoto.setValue(pin, forKey: "pin")
+     
         // Add Address to Person
         let photos = pin.mutableSetValueForKey("photos")
         photos.addObject(newPhoto)
-        
         
         do {
             try pin.managedObjectContext?.save()
@@ -189,10 +162,9 @@ class PersistenceManager: NSObject {
         } catch {
             let saveError = error as NSError
             print(saveError)
-            
             return nil
         }
-        
+        */
     }
     
     //MARK: Cleaner
@@ -211,5 +183,20 @@ class PersistenceManager: NSObject {
             print(saveError)
             return nil
         }
+    }
+    
+    
+    //MARK:
+    func saveContext() {
+        
+        if managedContext.hasChanges {
+            do {
+                try managedContext.save()
+            } catch {
+                print("saveContext() error: \(error)")
+                abort()
+            }
+        }
+        
     }
 }

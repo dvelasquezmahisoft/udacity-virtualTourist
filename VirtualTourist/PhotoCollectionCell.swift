@@ -23,7 +23,10 @@ class PhotoCollectionCell: UICollectionViewCell {
             
             ImageLoader.instance.imageFromUrl(url!, completionHandler: {(image: UIImage?, url: String) in
                 print("Image load in getAllImagesFromUrl \(url)")
-                self.image =  image
+                
+                if let imageTemp = image{
+                    self.image.image = imageTemp
+                }
             })
             
         }

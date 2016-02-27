@@ -75,7 +75,7 @@
                         <rect key="frame" x="0.0" y="0.0" width="600" height="600"/>
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                         <subviews>
-                            <collectionView clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="scaleToFill" dataMode="prototypes" translatesAutoresizingMaskIntoConstraints="NO" id="h65-x0-6LE">
+                            <collectionView clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="scaleToFill" showsHorizontalScrollIndicator="NO" dataMode="prototypes" translatesAutoresizingMaskIntoConstraints="NO" id="h65-x0-6LE">
                                 <rect key="frame" x="0.0" y="0.0" width="240" height="128"/>
                                 <color key="backgroundColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
                                 <collectionViewFlowLayout key="collectionViewLayout" minimumLineSpacing="10" minimumInteritemSpacing="10" id="mXq-5w-dAv">
@@ -133,8 +133,8 @@
                                     </collectionViewCell>
                                 </cells>
                                 <connections>
-                                    <outlet property="dataSource" destination="9wS-cB-6KU" id="wIF-sT-HMm"/>
-                                    <outlet property="delegate" destination="9wS-cB-6KU" id="kLU-XZ-95j"/>
+                                    <outlet property="dataSource" destination="9wS-cB-6KU" id="Aji-pG-Jaw"/>
+                                    <outlet property="delegate" destination="9wS-cB-6KU" id="jl4-u1-MfC"/>
                                 </connections>
                             </collectionView>
                             <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="1C3-3f-98i">
@@ -156,7 +156,7 @@
                                     </mask>
                                 </variation>
                                 <connections>
-                                    <action selector="addNewCollection:" destination="9wS-cB-6KU" eventType="touchUpInside" id="psI-VW-vLv"/>
+                                    <action selector="addNewCollection:" destination="9wS-cB-6KU" eventType="touchUpInside" id="cbq-kI-ZFb"/>
                                 </connections>
                             </button>
                             <label hidden="YES" opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="No images in this pin" textAlignment="center" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="gQc-3S-pOz">
@@ -180,7 +180,7 @@
                                     <navigationItem id="rTy-Er-gUo">
                                         <barButtonItem key="leftBarButtonItem" title="&lt; OK" id="BbJ-Kn-hTQ">
                                             <connections>
-                                                <action selector="goBack:" destination="9wS-cB-6KU" id="THq-j1-puc"/>
+                                                <action selector="goBack:" destination="9wS-cB-6KU" id="9EQ-EW-ICN"/>
                                             </connections>
                                         </barButtonItem>
                                     </navigationItem>
@@ -242,6 +242,17 @@
                                 <exclude reference="NF8-KO-t9m"/>
                             </mask>
                             <mask key="constraints">
+                                <exclude reference="NDx-nd-vzj"/>
+                                <exclude reference="fSK-Lc-web"/>
+                                <exclude reference="2TJ-EI-2fU"/>
+                                <exclude reference="gsm-cM-aWP"/>
+                                <exclude reference="BBL-VN-4qz"/>
+                                <exclude reference="Vma-q1-Oqi"/>
+                                <exclude reference="Xyj-Uy-wgd"/>
+                                <exclude reference="ZS6-37-uJh"/>
+                                <exclude reference="vQ0-Yg-HS5"/>
+                                <exclude reference="DSW-QS-ocO"/>
+                                <exclude reference="ZZV-4p-rPc"/>
                                 <exclude reference="UZV-73-MOR"/>
                                 <exclude reference="hjJ-A1-vCH"/>
                                 <exclude reference="tx2-hN-4qP"/>
@@ -254,17 +265,6 @@
                                 <exclude reference="Rho-Yd-HWC"/>
                                 <exclude reference="aqW-nO-N7y"/>
                                 <exclude reference="hTV-qM-7GV"/>
-                                <exclude reference="2TJ-EI-2fU"/>
-                                <exclude reference="gsm-cM-aWP"/>
-                                <exclude reference="DSW-QS-ocO"/>
-                                <exclude reference="ZZV-4p-rPc"/>
-                                <exclude reference="BBL-VN-4qz"/>
-                                <exclude reference="Vma-q1-Oqi"/>
-                                <exclude reference="Xyj-Uy-wgd"/>
-                                <exclude reference="ZS6-37-uJh"/>
-                                <exclude reference="vQ0-Yg-HS5"/>
-                                <exclude reference="NDx-nd-vzj"/>
-                                <exclude reference="fSK-Lc-web"/>
                             </mask>
                         </variation>
                         <variation key="widthClass=compact">
@@ -278,6 +278,17 @@
                                 <include reference="NF8-KO-t9m"/>
                             </mask>
                             <mask key="constraints">
+                                <include reference="NDx-nd-vzj"/>
+                                <include reference="fSK-Lc-web"/>
+                                <include reference="2TJ-EI-2fU"/>
+                                <include reference="gsm-cM-aWP"/>
+                                <include reference="BBL-VN-4qz"/>
+                                <include reference="Vma-q1-Oqi"/>
+                                <include reference="Xyj-Uy-wgd"/>
+                                <include reference="ZS6-37-uJh"/>
+                                <include reference="vQ0-Yg-HS5"/>
+                                <include reference="DSW-QS-ocO"/>
+                                <include reference="ZZV-4p-rPc"/>
                                 <include reference="UZV-73-MOR"/>
                                 <include reference="hjJ-A1-vCH"/>
                                 <include reference="tx2-hN-4qP"/>
@@ -290,28 +301,16 @@
                                 <include reference="Rho-Yd-HWC"/>
                                 <include reference="aqW-nO-N7y"/>
                                 <include reference="hTV-qM-7GV"/>
-                                <include reference="2TJ-EI-2fU"/>
-                                <include reference="gsm-cM-aWP"/>
-                                <include reference="DSW-QS-ocO"/>
-                                <include reference="ZZV-4p-rPc"/>
-                                <include reference="BBL-VN-4qz"/>
-                                <include reference="Vma-q1-Oqi"/>
-                                <include reference="Xyj-Uy-wgd"/>
-                                <include reference="ZS6-37-uJh"/>
-                                <include reference="vQ0-Yg-HS5"/>
-                                <include reference="NDx-nd-vzj"/>
-                                <include reference="fSK-Lc-web"/>
                             </mask>
                         </variation>
                     </view>
                     <navigationItem key="navigationItem" id="CXo-CX-gpP"/>
                     <connections>
                         <outlet property="activityIndicator" destination="vff-R3-Yvp" id="WNH-GK-Smo"/>
-                        <outlet property="mapDetail" destination="NF8-KO-t9m" id="vJA-k2-Enf"/>
-                        <outlet property="newCollectionBtn" destination="1C3-3f-98i" id="nuc-lu-LdX"/>
-                        <outlet property="noImagesLbl" destination="gQc-3S-pOz" id="it5-um-f0Q"/>
-                        <outlet property="overlay" destination="UG9-cx-TzO" id="lYi-Gb-wC2"/>
-                        <outlet property="photoCollection" destination="h65-x0-6LE" id="0Nj-6y-XR4"/>
+                        <outlet property="collectionView" destination="h65-x0-6LE" id="x9o-oX-AyR"/>
+                        <outlet property="mapView" destination="NF8-KO-t9m" id="eBU-Wq-G0f"/>
+                        <outlet property="noImagesLbl" destination="gQc-3S-pOz" id="58u-Qk-jCl"/>
+                        <outlet property="overlay" destination="UG9-cx-TzO" id="wXN-WR-vIL"/>
                     </connections>
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="Tfb-8Z-e3R" userLabel="First Responder" sceneMemberID="firstResponder"/>

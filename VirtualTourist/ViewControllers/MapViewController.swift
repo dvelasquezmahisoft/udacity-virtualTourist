@@ -85,7 +85,7 @@ class MapViewController: UIViewController {
          
             let destination = (segue.destinationViewController as! ShowPhotoCollectionController)
             
-            destination.pinLocation = newPin
+            destination.pin = PersistenceManager.instance.getPin(newPin!.id!)
             
         }
     }
