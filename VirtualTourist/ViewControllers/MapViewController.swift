@@ -36,13 +36,13 @@ class MapViewController: UIViewController {
         
         mapView.addGestureRecognizer(UILongPressGestureRecognizer(target: self, action: "addAnnotationGesture:"))
         
-        loadPins()
-        
-        loadPreviousLocation()
+      
     }
     
     override func viewWillAppear(animated: Bool) {
+        loadPins()
         
+        loadPreviousLocation()
     }
 
 
@@ -183,12 +183,6 @@ extension MapViewController: MKMapViewDelegate {
         
         let pin = view.annotation as! PinAnnotation
         
-        //Update Pin
-        if dragEnded == true {
-            dragEnded = false
-            return
-        }
-        
         let newP = PersistenceManager.instance.getPin(pin.id!)
         newPin = PinLocation(latitude: Double(newP.lat!), longitude: Double(newP.lon!), id: Int(newP.identifier!))
         performSegueWithIdentifier("showPhotoCollection", sender: self)
@@ -203,12 +197,6 @@ extension MapViewController: MKMapViewDelegate {
         
     }
     
-    func mapView(mapView: MKMapView, annotationView view: MKAnnotationView, didChangeDragState newState: MKAnnotationViewDragState, fromOldState oldState: MKAnnotationViewDragState) {
-        
-        if newState == MKAnnotationViewDragState.Ending {
-            dragEnded = true
-        }
-    }
     
 }
 
