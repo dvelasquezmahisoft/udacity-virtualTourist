@@ -17,11 +17,13 @@ class FlickrManagement: NSObject {
     let METHOD_NAME = "flickr.photos.search"
     
     let PHOTOS_PER_PAGE = 25
+    let MAX_PAGE = 10
     let MAX_FLICKR = 100
     let SAFE_SEARCH = "1"
     let DATA_FORMAT = "json"
     let NO_JSON_CALLBACK = "1"
     
+  
     
     class func sharedInstance() -> FlickrManagement {
         
@@ -34,12 +36,15 @@ class FlickrManagement: NSObject {
     
     func photosSearch(pin: Pin, connection: ConnectionAPI) {
         
+        
+        let random = randomNumber()
+        
         let methodArguments: [String:AnyObject] = [
             "method": METHOD_NAME,
             "bbox": createBBoxString(Double(pin.lat!), longitude: Double(pin.lon!)),
             "safe_search": SAFE_SEARCH,
             "per_page": PHOTOS_PER_PAGE,
-            "page": PHOTOS_PER_PAGE,
+            "page": random,
             "api_key": API_KEY,
             "format": DATA_FORMAT,
             "nojsoncallback": NO_JSON_CALLBACK,
@@ -59,5 +64,14 @@ class FlickrManagement: NSObject {
         return "\(bottomLon),\(bottomLat),\(topLon),\(topLat)"
     }
     
+    
+    func randomNumber() -> Int{
+        
+        let random_number = Int(arc4random_uniform(UInt32(MAX_PAGE)) + 1)
+        
+        print ("random = ", random_number)
+        
+        return random_number
+    }
 }
 

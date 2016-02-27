@@ -142,6 +142,7 @@ class ConnectionAPI : NSObject{
                         print("JSON \(serverTag): \(JSONR)")
                         
                         if !self.errorResponse(status!) {
+                            
                             print("**** SUCCESS ****")
                             
                             if let jsonPhotosDictionary = JSONR["photos"] as? NSDictionary {
@@ -151,8 +152,8 @@ class ConnectionAPI : NSObject{
                                     var photoProperties = [[String:String]]()
                                     
                                     for jsonPhotoData in jsonPhotoDataArray {
+                                        
                                         if let photoProperty = self.photoParamsToProperties(jsonPhotoData as! NSDictionary) {
-                                            
                                             photoProperties.append(photoProperty)
                                         }
                                     }

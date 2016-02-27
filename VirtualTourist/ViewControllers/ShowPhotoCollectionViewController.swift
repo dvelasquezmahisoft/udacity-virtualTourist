@@ -26,7 +26,7 @@ class ShowPhotoCollectionController: BaseViewController {
     var deletedIndexPaths: [NSIndexPath]!
     var updatedIndexPaths: [NSIndexPath]!
     
-    var lastDowloaded = 0 //manage new collection request
+    var lastPageDowloaded = 1 //manage new collection request
     
     var persistenceContext: NSManagedObjectContext {
         return  PersistenceManager.instance.managedContext
