@@ -11,9 +11,6 @@ import CoreData
 import MapKit
 
 
-//TODO: Photo adding function
-//TODO: Photo consult function
-
 class PersistenceManager: NSObject {
     
     let appDelegate = UIApplication.sharedApplication().delegate as! AppDelegate
@@ -133,56 +130,8 @@ class PersistenceManager: NSObject {
     
     
     func savePhoto(pin: Pin, imagePath: String, name: String){
-        
-        
         let photo = Photo(name: name , imageUrl: imagePath, context: managedContext)
-        
         photo.pin = pin
-        
-        /*
-        // Create Photo
-        let entityPhoto = NSEntityDescription.entityForName("Photo", inManagedObjectContext:managedContext)
-        
-        
-        let newPhoto = NSManagedObject(entity: entityPhoto!, insertIntoManagedObjectContext:managedContext)
-        
-        //Populate Photo
-        newPhoto.setValue(imagePath, forKey: "imageUrl")
-        newPhoto.setValue(name, forKey: "name")
-        newPhoto.setValue(pin, forKey: "pin")
-     
-        // Add Address to Person
-        let photos = pin.mutableSetValueForKey("photos")
-        photos.addObject(newPhoto)
-        
-        do {
-            try pin.managedObjectContext?.save()
-           
-            return pin
-        } catch {
-            let saveError = error as NSError
-            print(saveError)
-            return nil
-        }
-        */
-    }
-    
-    //MARK: Cleaner
-    func removeAllPhotos(id: NSNumber) -> Pin?{
-        
-        let pin = getPin(id.integerValue)
-        
-        pin.setValue(nil, forKey:"photos")
-        
-        do {
-            try pin.managedObjectContext?.save()
-            return pin
-        } catch {
-            
-            let saveError = error as NSError
-            print(saveError)
-            return nil
-        }
     }
     
     

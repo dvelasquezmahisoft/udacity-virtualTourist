@@ -31,12 +31,11 @@ class ImageLoader {
     }
     
     
-    func imageFromUrl(url: NSURL, placeHolderName: String = "userDefault", completionHandler:(image: UIImage?, url: String) -> ()){
+    func imageFromUrl(url: NSURL, completionHandler:(image: UIImage?, url: String) -> ()){
         
         let data: NSData? = self.cache.objectForKey(url.absoluteString) as? NSData
         
         if let goodData = data {
-            print("Image in cache \(url.absoluteString)")
             let image = UIImage(data: goodData)
             dispatch_async(dispatch_get_main_queue(), {() in
                 completionHandler(image: image, url: url.absoluteString)
@@ -71,7 +70,6 @@ class ImageLoader {
         let data: NSData? = self.cache.objectForKey(url.absoluteString) as? NSData
         
         if let goodData = data {
-            print("Image in cache \(url.absoluteString)")
             
             let image = UIImage(data: goodData)
             

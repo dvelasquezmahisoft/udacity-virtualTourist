@@ -15,8 +15,11 @@ class PhotoCollectionCell: UICollectionViewCell {
     class var identifier: String { return String.className(self) }
     
     func setup(photoUrl: String){
-        self.backgroundColor = .grayColor()
         let url = NSURL(string: photoUrl)
+        
+        //Set placeholder image
+        self.backgroundColor = .grayColor()
+        self.image.image = UIImage(named: "Launch")
         
         dispatch_async(dispatch_get_main_queue()) { () -> Void in
             ImageLoader.instance.imageFromUrl(url!, completionHandler: {(image: UIImage?, url: String) in

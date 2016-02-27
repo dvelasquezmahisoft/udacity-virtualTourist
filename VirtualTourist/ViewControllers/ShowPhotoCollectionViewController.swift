@@ -18,7 +18,7 @@ class ShowPhotoCollectionController: BaseViewController {
     @IBOutlet weak var noImagesLbl: UILabel!
     
     //MARK: Logic
-    let regionRadius: CLLocationDistance = 300
+    let REGION_RADIUS: CLLocationDistance = 600
     var pin: Pin!
     var connectionAPI:ConnectionAPI = ConnectionAPI()
     
@@ -98,7 +98,7 @@ class ShowPhotoCollectionController: BaseViewController {
         let initialLocation = CLLocation(latitude: Double(pin.lat!), longitude: Double(pin.lon!))
         
         let coordinateRegion = MKCoordinateRegionMakeWithDistance(initialLocation.coordinate,
-            regionRadius * 2.0, regionRadius * 2.0)
+            REGION_RADIUS, REGION_RADIUS)
         
         mapDetail.setRegion(coordinateRegion, animated: true)
     }
@@ -135,7 +135,6 @@ class ShowPhotoCollectionController: BaseViewController {
         
         PersistenceManager.instance.saveContext()
     }
-    
     
     
     override func viewWillTransitionToSize(size: CGSize, withTransitionCoordinator coordinator: UIViewControllerTransitionCoordinator) {

@@ -10,11 +10,6 @@ import UIKit
 import MapKit
 import CoreData
 
-
-//TODO: Adding loader when the pin is adding
-
-
-
 class MapViewController: UIViewController {
     
     @IBOutlet weak var mapView: MKMapView!
@@ -31,8 +26,6 @@ class MapViewController: UIViewController {
         
         super.viewDidLoad()
         
-        loadPreviousLocation()
-        
         //Init locationManager
         locationManager = CLLocationManager()
         locationManager.delegate = self
@@ -40,44 +33,19 @@ class MapViewController: UIViewController {
         locationManager.requestAlwaysAuthorization()
         locationManager.startUpdatingLocation()
         
-        mapView.addGestureRecognizer(UILongPressGestureRecognizer(target: self, action: "addAnnotation:"))
         
+        mapView.addGestureRecognizer(UILongPressGestureRecognizer(target: self, action: "addAnnotationGesture:"))
         
-        //UITapGestureRecognizer UI
         loadPins()
         
-        centerMapOnLocation()
+        loadPreviousLocation()
     }
     
     override func viewWillAppear(animated: Bool) {
         
     }
-    
-    
-    //MARK: IBAction Methods
-    
-    
-    
-    
-    //MARK: Other Methods
-    
-    func centerMapOnLocation() {
-        
-        let zoom = PersistenceManager.instance.getCurrentZoom()
-        let coord = PersistenceManager.instance.getCurrentLocation()
-        
-        
-        if coord.latitude != 0 && coord.longitude != 0{
-            let storedCamera = MKMapCamera(lookingAtCenterCoordinate: coord, fromEyeCoordinate: coord, eyeAltitude: CLLocationDistance(zoom))
-            
-            mapView.setCamera(storedCamera, animated: false)
-        }
-    }
-    
-    
-    func loadPreviousLocation(){
-        //TODO:
-    }
+
+
     
     override func prepareForSegue(segue: UIStoryboardSegue, sender: AnyObject?) {
         
@@ -87,6 +55,21 @@ class MapViewController: UIViewController {
             
             destination.pin = PersistenceManager.instance.getPin(newPin!.id!)
             
+        }
+    }
+    
+    
+    //MARK: Other Methods
+    
+    func loadPreviousLocation(){
+        let zoom = PersistenceManager.instance.getCurrentZoom()
+        let coord = PersistenceManager.instance.getCurrentLocation()
+        
+        
+        if coord.latitude != 0 && coord.longitude != 0{
+            let storedCamera = MKMapCamera(lookingAtCenterCoordinate: coord, fromEyeCoordinate: coord, eyeAltitude: CLLocationDistance(zoom))
+            
+            mapView.setCamera(storedCamera, animated: false)
         }
     }
     
@@ -111,9 +94,9 @@ class MapViewController: UIViewController {
     /**
      * Tap Gesture Recognizer action.
      * Adding a pinAnnotation in the map and save info in persistence.
-     * @param: gestureRecognizer (TapGestureRecognizer)
+     * @param: gestureRecognizer (LongPressGestureRecognizer)
      */
-    func addAnnotation(gestureRecognizer:UIGestureRecognizer){
+    func addAnnotationGesture(gestureRecognizer:UIGestureRecognizer){
     
         let touchPoint = gestureRecognizer.locationInView(mapView)
         let newCoordinates = mapView.convertPoint(touchPoint, toCoordinateFromView: mapView)
@@ -122,12 +105,10 @@ class MapViewController: UIViewController {
         
         if gestureRecognizer.state == .Ended{
             
-            //TODO: Show loader
             CLGeocoder().reverseGeocodeLocation(CLLocation(latitude: newCoordinates.latitude,
                 longitude: newCoordinates.longitude),
                 completionHandler: {(placemarks, error) -> Void in
                     
-                    //TODO: Hide loader
                     if error != nil {
                         showAlert("Reverse geocoder failed with error" + error!.localizedDescription, viewController: self)
                         return
@@ -228,6 +209,7 @@ extension MapViewController: MKMapViewDelegate {
             dragEnded = true
         }
     }
+    
 }
 
 extension MapViewController: CLLocationManagerDelegate{
