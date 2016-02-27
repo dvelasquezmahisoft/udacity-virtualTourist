@@ -19,11 +19,7 @@ class PhotoCollectionCell: UICollectionViewCell {
         let url = NSURL(string: photoUrl)
         
         dispatch_async(dispatch_get_main_queue()) { () -> Void in
-           
-            
             ImageLoader.instance.imageFromUrl(url!, completionHandler: {(image: UIImage?, url: String) in
-                print("Image load in getAllImagesFromUrl \(url)")
-                
                 if let imageTemp = image{
                     self.image.image = imageTemp
                 }

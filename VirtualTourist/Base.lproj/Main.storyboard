@@ -307,10 +307,10 @@
                     <navigationItem key="navigationItem" id="CXo-CX-gpP"/>
                     <connections>
                         <outlet property="activityIndicator" destination="vff-R3-Yvp" id="WNH-GK-Smo"/>
-                        <outlet property="collectionView" destination="h65-x0-6LE" id="x9o-oX-AyR"/>
                         <outlet property="mapDetail" destination="NF8-KO-t9m" id="A3B-Iz-TNl"/>
                         <outlet property="noImagesLbl" destination="gQc-3S-pOz" id="58u-Qk-jCl"/>
                         <outlet property="overlay" destination="UG9-cx-TzO" id="wXN-WR-vIL"/>
+                        <outlet property="photoCollection" destination="h65-x0-6LE" id="qNw-1N-oCE"/>
                     </connections>
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="Tfb-8Z-e3R" userLabel="First Responder" sceneMemberID="firstResponder"/>
