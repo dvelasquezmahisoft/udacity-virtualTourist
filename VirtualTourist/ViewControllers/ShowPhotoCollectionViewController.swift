@@ -21,15 +21,11 @@ class ShowPhotoCollectionController: BaseViewController {
     var pin: Pin!
     var connectionAPI:ConnectionAPI = ConnectionAPI()
     
-   
-    let cellsPerRowInPortraitMode: CGFloat = 3
-    let cellsPerRowInLandscpaeMode: CGFloat = 6
-    let minimumSpacingPerCell: CGFloat = 5
-
     var insertedIndexPaths: [NSIndexPath]!
     var deletedIndexPaths: [NSIndexPath]!
     var updatedIndexPaths: [NSIndexPath]!
-    var numberOfPhotoCurrentlyDownloading = 0
+    
+    var lastDowloaded = 0 //manage new collection request
     
     var persistenceContext: NSManagedObjectContext {
         return  PersistenceManager.instance.managedContext
@@ -46,6 +42,7 @@ class ShowPhotoCollectionController: BaseViewController {
             managedObjectContext: self.persistenceContext,
             sectionNameKeyPath: nil,
             cacheName: nil)
+        
         return fetchedResultsController
     }()
     
@@ -53,11 +50,12 @@ class ShowPhotoCollectionController: BaseViewController {
     // MARK: - View Life cycle
     override func viewDidLoad() {
         
-        connectionAPI.delegate = self
+        showRequestMode(show: false)
         noImagesLbl.hidden = true
         
-        // CoreData
+        connectionAPI.delegate = self
         fetchedController.delegate = self
+        
         do {
             try fetchedController.performFetch()
         } catch {
@@ -71,13 +69,23 @@ class ShowPhotoCollectionController: BaseViewController {
     
     
     override func viewWillAppear(animated: Bool) {
-        
         super.viewWillAppear(animated)
         loadPinLocation()
-        
     }
     
     
+    //MARK: IBActions
+    @IBAction func addNewCollection(sender: AnyObject) {
+        getNewCollection()
+    }
+    
+    @IBAction func goBack(sender: AnyObject) {
+        dismissViewControllerAnimated(true, completion: nil)
+    }
+    
+    
+    
+    //MARK: Other Methods
     func loadPinLocation(){
         
         //Show pin in the map
@@ -95,20 +103,9 @@ class ShowPhotoCollectionController: BaseViewController {
     }
     
     
-    //MARK: IBActions
-    @IBAction func addNewCollection(sender: AnyObject) {
-        getNewCollection()
-    }
-    
-    @IBAction func goBack(sender: AnyObject) {
-        dismissViewControllerAnimated(true, completion: nil)
-    }
-    
-    
-    
-    // MARK: - Photos
     func getFlickrPhotos() {
-        activityIndicator.startAnimating()
+        
+        showRequestMode(show: true)
         noImagesLbl.hidden = true
         
         FlickrManagement.sharedInstance().photosSearch(pin, connection: connectionAPI)
@@ -138,27 +135,7 @@ class ShowPhotoCollectionController: BaseViewController {
         PersistenceManager.instance.saveContext()
     }
     
-    // MARK: - CollectionView layout
     
-    override func viewDidLayoutSubviews() {
-        super.viewDidLayoutSubviews()
-        
-        let layout = UICollectionViewFlowLayout()
-        layout.sectionInset = UIEdgeInsets(top: 0, left: 0, bottom: 0, right: 0)
-        layout.minimumLineSpacing = minimumSpacingPerCell
-        layout.minimumInteritemSpacing = minimumSpacingPerCell
-        
-        var width: CGFloat!
-        if UIApplication.sharedApplication().statusBarOrientation.isLandscape == true {
-            width = (CGFloat(collectionView.frame.size.width) / cellsPerRowInLandscpaeMode) - (minimumSpacingPerCell - (minimumSpacingPerCell / cellsPerRowInLandscpaeMode))
-        } else {
-            width = (CGFloat(collectionView.frame.size.width) / cellsPerRowInPortraitMode) - (minimumSpacingPerCell - (minimumSpacingPerCell / cellsPerRowInPortraitMode))
-        }
-        
-        layout.itemSize = CGSize(width: width, height: width)
-        
-        collectionView.collectionViewLayout = layout
-    }
     
     override func viewWillTransitionToSize(size: CGSize, withTransitionCoordinator coordinator: UIViewControllerTransitionCoordinator) {
         super.viewWillTransitionToSize(size, withTransitionCoordinator: coordinator)
@@ -190,16 +167,18 @@ extension ShowPhotoCollectionController: UICollectionViewDataSource, UICollectio
         return cell
     }
     
-    func collectionView(collectionView: UICollectionView, didSelectItemAtIndexPath indexPath: NSIndexPath) {
-        deletePhoto(indexPath)
+    func collectionView(collectionView: UICollectionView,
+        didSelectItemAtIndexPath indexPath: NSIndexPath) {
+            deletePhoto(indexPath)
     }
-
+    
 }
 
 
 extension ShowPhotoCollectionController: NSFetchedResultsControllerDelegate{
     
     func controllerWillChangeContent(controller: NSFetchedResultsController) {
+        
         insertedIndexPaths = [NSIndexPath]()
         deletedIndexPaths = [NSIndexPath]()
         updatedIndexPaths = [NSIndexPath]()
@@ -234,7 +213,7 @@ extension ShowPhotoCollectionController: NSFetchedResultsControllerDelegate{
             }
             }, completion: nil)
     }
-
+    
 }
 
 extension ShowPhotoCollectionController: ConnectionAPIProtocol{
@@ -244,10 +223,14 @@ extension ShowPhotoCollectionController: ConnectionAPIProtocol{
         let photosResult = results as! NSArray
         
         for photoProperty in photosResult {
-            PersistenceManager.instance.savePhoto(self.pin, imagePath: photoProperty["remotePath"] as! String, name: photoProperty["imageName"] as! String)
+            PersistenceManager.instance.savePhoto(pin, imagePath: photoProperty["remotePath"] as! String, name: photoProperty["imageName"] as! String)
         }
         
         dispatch_async(dispatch_get_main_queue()) {
+        
+            self.showRequestMode(show: false)
+            self.noImagesLbl.hidden = (photosResult.count != 0)
+            
             PersistenceManager.instance.saveContext()
         }
     }
@@ -256,7 +239,7 @@ extension ShowPhotoCollectionController: ConnectionAPIProtocol{
     func didReceiveFail(error error: NSError, errorObject:AnyObject) {
         
         dispatch_async(dispatch_get_main_queue()) {
-            self.activityIndicator.stopAnimating()
+            self.showRequestMode(show: false)
             self.noImagesLbl.hidden = false
         }
     }
