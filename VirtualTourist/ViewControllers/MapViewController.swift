@@ -35,12 +35,12 @@ class MapViewController: UIViewController {
         
         
         mapView.addGestureRecognizer(UILongPressGestureRecognizer(target: self, action: "addAnnotationGesture:"))
-        
+          loadPins()
       
     }
     
     override func viewWillAppear(animated: Bool) {
-        loadPins()
+      
         
         loadPreviousLocation()
     }
