@@ -17,45 +17,45 @@
                         <rect key="frame" x="0.0" y="0.0" width="600" height="600"/>
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                         <subviews>
-                            <mapView clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="scaleToFill" mapType="standard" translatesAutoresizingMaskIntoConstraints="NO" id="HaH-hs-KTH">
+                            <mapView clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="scaleToFill" mapType="standard" translatesAutoresizingMaskIntoConstraints="NO" id="Nfl-7w-4TI">
                                 <rect key="frame" x="0.0" y="0.0" width="240" height="128"/>
                                 <connections>
-                                    <outlet property="delegate" destination="BYZ-38-t0r" id="B5q-MM-2rd"/>
+                                    <outlet property="delegate" destination="BYZ-38-t0r" id="D6e-mj-WsV"/>
                                 </connections>
                             </mapView>
                         </subviews>
                         <color key="backgroundColor" white="1" alpha="1" colorSpace="custom" customColorSpace="calibratedWhite"/>
                         <constraints>
-                            <constraint firstItem="HaH-hs-KTH" firstAttribute="height" secondItem="8bC-Xf-vdC" secondAttribute="height" id="F3e-dP-H2M"/>
-                            <constraint firstItem="HaH-hs-KTH" firstAttribute="centerY" secondItem="8bC-Xf-vdC" secondAttribute="centerY" id="LF8-ww-73z"/>
-                            <constraint firstItem="HaH-hs-KTH" firstAttribute="centerX" secondItem="8bC-Xf-vdC" secondAttribute="centerX" id="LOa-2l-zex"/>
-                            <constraint firstItem="HaH-hs-KTH" firstAttribute="width" secondItem="8bC-Xf-vdC" secondAttribute="width" id="hxv-o0-dhd"/>
+                            <constraint firstItem="Nfl-7w-4TI" firstAttribute="centerX" secondItem="8bC-Xf-vdC" secondAttribute="centerX" id="TZf-0K-2k7"/>
+                            <constraint firstItem="Nfl-7w-4TI" firstAttribute="width" secondItem="8bC-Xf-vdC" secondAttribute="width" id="up2-fS-Pgo"/>
+                            <constraint firstItem="Nfl-7w-4TI" firstAttribute="height" secondItem="8bC-Xf-vdC" secondAttribute="height" id="yRe-9O-olC"/>
+                            <constraint firstItem="Nfl-7w-4TI" firstAttribute="centerY" secondItem="8bC-Xf-vdC" secondAttribute="centerY" id="ycB-Ki-xz4"/>
                         </constraints>
                         <variation key="default">
                             <mask key="subviews">
-                                <exclude reference="HaH-hs-KTH"/>
+                                <exclude reference="Nfl-7w-4TI"/>
                             </mask>
                             <mask key="constraints">
-                                <exclude reference="F3e-dP-H2M"/>
-                                <exclude reference="LF8-ww-73z"/>
-                                <exclude reference="LOa-2l-zex"/>
-                                <exclude reference="hxv-o0-dhd"/>
+                                <exclude reference="TZf-0K-2k7"/>
+                                <exclude reference="up2-fS-Pgo"/>
+                                <exclude reference="yRe-9O-olC"/>
+                                <exclude reference="ycB-Ki-xz4"/>
                             </mask>
                         </variation>
                         <variation key="widthClass=compact">
                             <mask key="subviews">
-                                <include reference="HaH-hs-KTH"/>
+                                <include reference="Nfl-7w-4TI"/>
                             </mask>
                             <mask key="constraints">
-                                <include reference="F3e-dP-H2M"/>
-                                <include reference="LF8-ww-73z"/>
-                                <include reference="LOa-2l-zex"/>
-                                <include reference="hxv-o0-dhd"/>
+                                <include reference="TZf-0K-2k7"/>
+                                <include reference="up2-fS-Pgo"/>
+                                <include reference="yRe-9O-olC"/>
+                                <include reference="ycB-Ki-xz4"/>
                             </mask>
                         </variation>
                     </view>
                     <connections>
-                        <outlet property="mapView" destination="HaH-hs-KTH" id="o8g-iq-cYh"/>
+                        <outlet property="mapView" destination="Nfl-7w-4TI" id="RlO-XM-yq8"/>
                         <segue destination="9wS-cB-6KU" kind="showDetail" identifier="showPhotoCollection" id="4wZ-tp-nvg"/>
                     </connections>
                 </viewController>

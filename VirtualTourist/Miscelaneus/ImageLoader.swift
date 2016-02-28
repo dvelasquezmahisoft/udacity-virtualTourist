@@ -11,9 +11,6 @@ import UIKit
 
 class ImageLoader {
     
-    let cache = NSCache()
-    let preloadElements = 5
-    
     class var instance : ImageLoader {
         struct Static {
             static let instance : ImageLoader = ImageLoader()
@@ -33,17 +30,28 @@ class ImageLoader {
     
     func imageFromUrl(url: NSURL, completionHandler:(image: UIImage?, url: String) -> ()){
         
-        let data: NSData? = self.cache.objectForKey(url.absoluteString) as? NSData
+        let path = NSFileManager.defaultManager().URLsForDirectory(NSSearchPathDirectory.DocumentDirectory, inDomains: NSSearchPathDomainMask.UserDomainMask).first!
         
-        if let goodData = data {
-            let image = UIImage(data: goodData)
-            dispatch_async(dispatch_get_main_queue(), {() in
-                completionHandler(image: image, url: url.absoluteString)
-            })
+        let fileName = url.lastPathComponent
+        let urlPath = path.URLByAppendingPathComponent(fileName!)
+        
+        if NSFileManager.defaultManager().fileExistsAtPath(urlPath.path!) {
+            
+            let data = NSData(contentsOfURL: urlPath)
+           
+            if let goodData = data {
+                let image = UIImage(data: goodData)
+                dispatch_async(dispatch_get_main_queue(), {() in
+                    completionHandler(image: image, url: url.absoluteString)
+                })
+            }
+            
             return
         }
         
+        
         getDataFromUrl(url) { (data, response, error)  in
+            
             dispatch_async(dispatch_get_main_queue()) { () -> Void in
                 
                 guard let data = data where error == nil else { return }
@@ -52,7 +60,9 @@ class ImageLoader {
                     
                     let compressData = self.compressData(image: image, compressionQuality: 0.7)
                     
-                    self.cache.setObject(compressData, forKey: url.absoluteString)
+                    //Save in Documents Directory
+                    let success = NSFileManager.defaultManager().createFileAtPath(urlPath.path!, contents: compressData, attributes: nil)
+                    //print("Save success : - \(success)")
                     
                     dispatch_async(dispatch_get_main_queue(), {() in
                         completionHandler(image: image, url: url.absoluteString)
@@ -62,41 +72,7 @@ class ImageLoader {
             }
         }
     }
-    
-    
-    
-    func imageFromCache(url: NSURL, completionHandler:(image: UIImage?, url: String) -> ()) -> Bool{
-        
-        let data: NSData? = self.cache.objectForKey(url.absoluteString) as? NSData
-        
-        if let goodData = data {
-            
-            let image = UIImage(data: goodData)
-            
-            dispatch_async(dispatch_get_main_queue(), {() in
-                completionHandler(image: image, url: url.absoluteString)
-            })
-            
-            return true
-        }
-        
-        dispatch_async(dispatch_get_main_queue(), {() in
-            completionHandler(image: nil, url: url.absoluteString)
-        })
-        
-        return false
-    }
-    
-    func imageInCache(url: NSURL) -> Bool{
-        
-        let data: NSData? = self.cache.objectForKey(url.absoluteString) as? NSData
-        
-        guard (data != nil) else{
-            return false
-        }
-        
-        return true
-    }
+
     
     func compressData(image image: UIImage, compressionQuality: Float = 1.0) -> NSData! {
         let hasAlpha = image.hasAlpha()
@@ -105,4 +81,6 @@ class ImageLoader {
         
         return data
     }
+
+    
 }

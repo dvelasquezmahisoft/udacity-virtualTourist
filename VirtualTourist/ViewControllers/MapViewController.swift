@@ -35,17 +35,10 @@ class MapViewController: UIViewController {
         
         
         mapView.addGestureRecognizer(UILongPressGestureRecognizer(target: self, action: "addAnnotationGesture:"))
-          loadPins()
-      
-    }
-    
-    override func viewWillAppear(animated: Bool) {
-      
         
+        loadPins()
         loadPreviousLocation()
     }
-
-
     
     override func prepareForSegue(segue: UIStoryboardSegue, sender: AnyObject?) {
         
@@ -60,7 +53,6 @@ class MapViewController: UIViewController {
     
     
     //MARK: Other Methods
-    
     func loadPreviousLocation(){
         let zoom = PersistenceManager.instance.getCurrentZoom()
         let coord = PersistenceManager.instance.getCurrentLocation()
