@@ -61,7 +61,7 @@ class ImageLoader {
                     let compressData = self.compressData(image: image, compressionQuality: 0.7)
                     
                     //Save in Documents Directory
-                    let success = NSFileManager.defaultManager().createFileAtPath(urlPath.path!, contents: compressData, attributes: nil)
+                   NSFileManager.defaultManager().createFileAtPath(urlPath.path!, contents: compressData, attributes: nil)
                     //print("Save success : - \(success)")
                     
                     dispatch_async(dispatch_get_main_queue(), {() in
@@ -80,6 +80,22 @@ class ImageLoader {
         let data = hasAlpha ? UIImagePNGRepresentation(image) : UIImageJPEGRepresentation(image, CGFloat(compressionQuality))
         
         return data
+    }
+    
+    
+    func deleteImage(imageName: String) {
+        
+        let path = NSFileManager.defaultManager().URLsForDirectory(NSSearchPathDirectory.DocumentDirectory, inDomains: NSSearchPathDomainMask.UserDomainMask).first!
+        
+        let imagePath = path.URLByAppendingPathComponent(imageName)
+        
+        if NSFileManager.defaultManager().fileExistsAtPath(imagePath.path!) {
+            do {
+                try NSFileManager.defaultManager().removeItemAtURL(imagePath)
+            } catch {
+                print("Remove image error: \(imageName)")
+            }
+        }
     }
 
     

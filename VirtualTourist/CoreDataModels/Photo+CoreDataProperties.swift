@@ -31,4 +31,9 @@ extension Photo {
     }
     
     
+    override func prepareForDeletion() {
+        super.prepareForDeletion()
+        
+        ImageLoader.instance.deleteImage(name!)
+    }
 }
